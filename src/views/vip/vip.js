@@ -1,5 +1,5 @@
 import React from 'react'
-import vipImage from '../../vip.jpg'
+import vipImage from '../../assets/vip.jpg'
 
 const VIP = (props) => {
 	return (

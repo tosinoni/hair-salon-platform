@@ -5,8 +5,8 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require('dotenv');
 const helmet = require('helmet');
-const userRoutes = require('./routes/users.js');
-const userController = require('./controllers/users.js');
+const userRoutes = require('./backend/routes/users.js');
+const userController = require('./backend/controllers/users.js');
 
 
 dotenv.config();
@@ -33,9 +33,15 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 app.use(helmet());
 
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
+});
 
 app.get('/api', (req, res) => {
-	res.json({success:true, message: "API root."})
+	res.json({ success: true, message: "API root." })
 })
 
 app.use('/api/users', userRoutes)

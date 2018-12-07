@@ -16,7 +16,7 @@ function verifyToken(req, res, next) {
 	// if no token present, deny access
 	if(!token) return res.json({success: false, message: "No token provided"})
 	// otherwise, try to verify token
-	jwt.verify(token, JWT_SECRET, (err, decodedData) => {
+	jwt.verify(token, process.env.JWT_SECRET, (err, decodedData) => {
 		// if problem with token verification, deny access
 		if(err) return res.json({success: false, message: "Invalid token."})
 		// otherwise, search for user by id that was embedded in token

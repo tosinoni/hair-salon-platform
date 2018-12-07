@@ -2,14 +2,14 @@
 // /client/App.js
 import React, { Component } from "react";
 import { Switch, Route, Redirect } from 'react-router-dom'
-import httpClient from './httpClient'
+import httpClient from '../httpClient'
 
-import NavBar from './NavBar'
-import Login from './views/login/login'
-import Logout from './views/logout/logout'
-import Register from './views/register/register'
-import VIP from './views/vip/vip'
-import Home from './views/home/home'
+import NavBar from '../components/NavBar'
+import Login from './login/login'
+import Logout from './logout/logout'
+import Register from './register/register'
+import VIP from './vip/vip'
+import Home from './home/home'
 
 class App extends Component {
   state = { currentUser: httpClient.getCurrentUser() }

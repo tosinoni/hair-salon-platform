@@ -4,32 +4,32 @@ const signToken = require('../auth/auth.js').signToken
 
 exports.getAllUser = function (req, res) {
     User.find((err, data) => {
-        if (err) return res.json({ success: false, error: err });
-        return res.json({ success: true, data: data });
+        if (err) return res.status(204).send({ success: false, error: err });
+        return res.status(200).send({ success: true, data: data });
     });
 };
 
 exports.findUserById = function (req, res) {
     const { id } = req.body;
     User.findById((err, data) => {
-        if (err) return res.json({ success: false, error: err });
-        return res.json({ success: true, data: data });
+        if (err) return res.status(204).send({ success: false, error: err });
+        return res.status(200).send({ success: true, data: data });
     });
 };
 
 exports.deleteUserById = function (req, res) {
     const { id } = req.body;
     User.findOneAndDelete(id, err => {
-        if (err) return res.send(err);
-        return res.json({ success: true });
+        if (err) return res.status(204).send(err);
+        return res.status(200).send({ success: true });
     });
 };
 
 exports.UpdateUser = function (req, res) {
     const { id } = req.body;
     User.findOneAndUpdate(id, req.body, err => {
-        if (err) return res.json({ success: false, error: err });
-        return res.json({ success: true });
+        if (err) return res.status(400).send({ success: false, error: err });
+        return res.status(200).send({ success: true });
     });
 };
 
@@ -39,17 +39,17 @@ exports.registerUser = function (req, res) {
     const { firstname, lastname } = req.body;
 
     if (!firstname || !lastname) {
-        return res.json({
+        return res.status(400).send({
             success: false,
             error: "Please provide a valid first and last name"
         });
     }
 
     User.create(req.body, (err, user) => {
-        if (err) return res.json({ success: false, error: err });
+        if (err) return res.status(400).send({ success: false, error: err });
         // once user is created, generate a token to "log in":
         const token = signToken(user)
-        res.json({ success: true, token: token })
+        res.status(200).send({ success: true, token: token })
     })
 };
 
@@ -61,11 +61,11 @@ exports.login = function (req, res) {
         // if there's no user or the password is invalid
         if (!user || !user.validPassword(password)) {
             // deny access
-            return res.json({ success: false, message: "Login failed. Please provide a valid username and password" })
+            return res.status(400).send({ success: false, message: "Login failed. Please provide a valid username and password" })
         }
 
         const token = signToken(user)
-        res.json({ success: true, message: "Token attached.", token })
+        res.status(200).send({ success: true, message: "Token attached.", token })
     })
 };
 
