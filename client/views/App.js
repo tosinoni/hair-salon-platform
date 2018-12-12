@@ -12,7 +12,11 @@ import VIP from './vip/vip'
 import Home from './home/home'
 
 class App extends Component {
-  state = { currentUser: httpClient.getCurrentUser() }
+	constructor(props) {
+		super(props);
+		this.state = {currentUser: httpClient.getCurrentUser()};
+	}
+  
 
 	onLoginSuccess(user) {
 		this.setState({ currentUser: user})

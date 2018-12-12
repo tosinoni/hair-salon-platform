@@ -3,9 +3,13 @@ import httpClient from '../../httpClient'
 
 // sign up form behaves almost identically to log in form. We could create a flexible Form component to use for both actions, but for now we'll separate the two:
 class Register extends React.Component {
-	state = {
-		fields: { firstname: '', lastname: '', email: '', username:''}
+	constructor(props) {
+		super(props);
+		this.state = {
+			fields: { firstname: '', lastname: '', email: '', username:'' }
+		};
 	}
+	
 
 	onInputChange(evt) {
 		this.setState({

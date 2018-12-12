@@ -5,13 +5,13 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const dotenv = require('dotenv');
 const helmet = require('helmet');
-const userRoutes = require('./backend/routes/users.js');
-const userController = require('./backend/controllers/users.js');
+const userRoutes = require('./routes/users.js');
+const userController = require('./controllers/users.js');
 
 
 dotenv.config();
 
-const API_PORT = process.env.PORT || 3001;
+const API_PORT = process.env.PORT || 3000;
 const app = express();
 
 const dbRoute = process.env.DB_LINK;
@@ -32,6 +32,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 app.use(helmet());
+app.use(express.static('dist'));
 
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');

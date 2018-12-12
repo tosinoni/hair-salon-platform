@@ -2,10 +2,13 @@ import React from 'react'
 import httpClient from '../../httpClient'
 
 class Login extends React.Component {
-	state = {
-		fields: { username: '', password: ''}
+	constructor(props) {
+		super(props);
+		this.state = {
+			fields: { username: '', password: ''}
+		};
 	}
-
+	
 	onInputChange(evt) {
 		this.setState({
 			fields: {
