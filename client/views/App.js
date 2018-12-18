@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { Switch, Route, Redirect } from 'react-router-dom'
 import httpClient from '../httpClient'
 
-import NavBar from '../components/NavBar'
+import NavBar from '../components/navbar/NavBar'
 import Login from './login/login'
 import Logout from './logout/logout'
 import Register from './register/register'
@@ -14,23 +14,23 @@ import Home from './home/home'
 class App extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {currentUser: httpClient.getCurrentUser()};
+		this.state = { currentUser: httpClient.getCurrentUser() };
 	}
-  
+
 
 	onLoginSuccess(user) {
-		this.setState({ currentUser: user})
+		this.setState({ currentUser: user })
 	}
 
 	logOut() {
 		httpClient.logOut()
 		this.setState({ currentUser: null })
 	}
-	
+
 	render() {
 		const { currentUser } = this.state
 		return (
-			<div className='App container'>
+			<div className='App'>
 
 				<NavBar currentUser={currentUser} />
 

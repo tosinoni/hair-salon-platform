@@ -7,6 +7,8 @@ const dotenv = require('dotenv');
 const helmet = require('helmet');
 const userRoutes = require('./routes/users.js');
 const userController = require('./controllers/users.js');
+const path = require("path");
+const serveStatic = require('serve-static');
 
 
 dotenv.config();
@@ -32,8 +34,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 app.use(helmet());
-app.use(express.static('dist'));
-
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Origin', '*');
@@ -45,8 +45,15 @@ app.get('/api', (req, res) => {
 	res.json({ success: true, message: "API root." })
 })
 
-app.use('/api/users', userRoutes)
 
+
+app.use('/api/users', userRoutes)
+const appDir = path.join(`${__dirname}/../dist/index.html`)
+app.use(serveStatic('./dist', { index: ['default.html', 'default.htm'] }))
+
+app.get('*', function(req, res) {
+    res.sendfile(appDir);
+});
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
 

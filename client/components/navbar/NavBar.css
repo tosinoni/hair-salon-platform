@@ -1,0 +1,19 @@
+.NavBar a, .NavBar button {
+	margin: 0 5px;
+	cursor: pointer;
+}
+
+.NavBar {
+	margin-bottom: 20px
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand>img {
+    height: 50px;
+    padding-left: 4px;
+    padding-right: 14px;
+}
