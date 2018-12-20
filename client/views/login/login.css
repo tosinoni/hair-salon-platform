@@ -1,0 +1,10 @@
+.login-logo {
+  margin: 0 auto;
+}
+
+.login-container {
+    height: calc(100vh - 225px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
