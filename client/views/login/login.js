@@ -37,7 +37,6 @@ class Login extends React.Component {
       <div className="LogIn container login-container">
         <div className="col-md-4 well">
           <img className="login-logo img-responsive" src={logoImage} />
-          <h1 className="text-center">Log In</h1>
           <form onChange={this.onInputChange.bind(this)} onSubmit={this.onFormSubmit.bind(this)}>
             <div className="form-group">
               <input
@@ -57,8 +56,8 @@ class Login extends React.Component {
                 className="form-control"
               />
             </div>
-            <div className="form-group">
-              <button className="btn btn-primary btn-block">Log In</button>
+            <div className="form-group text-center login-button">
+              <button className="btn btn-primary">Log In</button>
             </div>
           </form>
         </div>
