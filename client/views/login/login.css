@@ -3,7 +3,7 @@
 }
 
 .login-container {
-    height: calc(100vh - 70px);
+    height: calc(100vh);
     display: flex;
     align-items: center;
     justify-content: center;
