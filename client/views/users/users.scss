@@ -1,0 +1,55 @@
+.users {
+  background: #fff;
+  box-shadow: 0 1px 15px 0 hsla(0, 0%, 48.2%, 0.05);
+  border: 0;
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+
+  .card-header {
+    color: #222a42;
+    padding: 15px 15px 0;
+    border: 0;
+
+    .card-title {
+      color: #1d253b;
+      font-weight: 100;
+      margin-bottom: 0.75rem;
+      font-size: 1.0625rem;
+      line-height: 1.45em;
+    }
+  }
+
+  .card-body {
+    padding: 15px;
+
+    .table-responsive {
+      overflow: scroll;
+      padding-bottom: 10px;
+
+      th {
+        color: rgba(34, 42, 66, 0.7);
+        border-color: rgba(34, 42, 66, 0.2);
+        padding: 12px 7px;
+        vertical-align: middle;
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 700;
+        border: 0;
+      }
+
+      tbody {
+          tr {
+            position: relative;
+
+            td {
+                border-color: rgba(34,42,66,.2);
+                padding: 12px 7px;
+                vertical-align: middle;
+                color: rgba(34,42,66,.7)!important;
+            }
+          }
+      }
+    }
+  }
+}

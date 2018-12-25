@@ -3,13 +3,9 @@ import React, { Component } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import httpClient from '../httpClient'
 
-import NavBar from '../components/navbar/NavBar'
-import Login from './login/login'
 import Logout from './logout/logout'
-import Register from './register/register'
-import VIP from './vip/vip'
 import Home from './home/home'
-import Dashboard from './dashboard/dashboard'
+import Admin from './admin/admin'
 
 class App extends Component {
   constructor(props) {
@@ -28,6 +24,7 @@ class App extends Component {
 
   render() {
     const { currentUser } = this.state
+
     return (
       <div className="App">
         <Switch>
@@ -38,26 +35,10 @@ class App extends Component {
             }}
           />
 
-          {/* the sign up component takes an 'onRegisterSuccess' prop which will perform the same thing as onLoginSuccess: set the state to contain the currentUser */}
-          <Route
-            path="/register"
-            render={props => {
-              return <Register {...props} onRegisterSuccess={this.onLoginSuccess.bind(this)} />
-            }}
-          />
-
-          <Route
-            path="/vip"
-            render={() => {
-              return currentUser ? <VIP /> : <Redirect to="/login" />
-            }}
-          />
-
           <Route
             path="/"
             render={props =>  {
-              console.log(this.state.currentUser)
-              return currentUser ? <Dashboard /> : <Home {...props} onLoginSuccess={this.onLoginSuccess.bind(this)}/>
+              return currentUser ? <Admin {...props} /> : <Home {...props} onLoginSuccess={this.onLoginSuccess.bind(this)}/>
             }}
           />
         </Switch>

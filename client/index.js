@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router } from 'react-router-dom'
+import { Router } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 import App from './views/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'font-awesome/css/font-awesome.min.css';
 
-import './styles/app.css'
+import './styles/app.scss'
+
+const hist = createBrowserHistory()
 
 ReactDOM.render(
-	<Router><App /></Router>,
+	<Router history={hist}><App /></Router>,
     document.getElementById('root')
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA

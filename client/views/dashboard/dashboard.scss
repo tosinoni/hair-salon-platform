@@ -1,0 +1,105 @@
+.card {
+  background: #fff;
+  box-shadow: 0 1px 15px 0 hsla(0, 0%, 48.2%, 0.05);
+  border: 0;
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+
+  &.card-tasks {
+    .card-body {
+      padding: 15px;
+
+      .table-full-width {
+        max-height: calc(100vh - 390px);
+        position: relative;
+      }
+
+      .table-responsive {
+        overflow: scroll;
+        padding-bottom: 10px;
+
+        .table {
+          margin-bottom: 0;
+          border-collapse: collapse;
+
+          .table-row {
+            position: relative;
+
+            td {
+              padding-top: 5px;
+              padding-bottom: 5px;
+              border-color: rgba(34, 42, 66, 0.2);
+              padding: 12px 7px;
+              vertical-align: middle;
+              color: rgba(34, 42, 66, 0.7) !important;
+              border-top: 0.0625rem solid #e3e3e3;
+
+              .form-check {
+                padding-left: 0;
+                display: block;
+
+                .form-check-label {
+                  padding-left: 25px;
+
+                  .form-check-input {
+                    position: relative;
+                    font-size: 25px;
+
+                    &:checked {
+                      border: none;
+                      background-color: #e14eca;
+                    }
+                  }
+                }
+              }
+
+              .title {
+                color: #1d253b;
+                font-weight: 600;
+                margin-bottom: 5px;
+              }
+
+              .text-muted {
+                color: #6c757d !important;
+                margin-bottom: 5px;
+                font-weight: 300;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .card-header {
+    color: #222a42;
+    padding: 15px 15px 0;
+    border: 0;
+    background-color: initial;
+
+    .title {
+      margin-right: 20px;
+      font-weight: 400;
+    }
+
+    .card-category {
+      margin-bottom: 5px;
+      color: #9a9a9a;
+      font-weight: 300;
+      font-size: 0.75rem;
+      text-transform: capitalize;
+    }
+
+    .card-title {
+      color: #1d253b;
+      font-weight: 100;
+      margin-bottom: 0.75rem;
+      font-size: 1.6875rem;
+    }
+  }
+
+  &.card-chart {
+    overflow: hidden;
+  }
+}

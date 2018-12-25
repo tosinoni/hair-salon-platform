@@ -1,0 +1,202 @@
+.register {
+  background: #fff;
+  box-shadow: 0 1px 15px 0 hsla(0, 0%, 48.2%, 0.05);
+  border: 0;
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+
+  .card-header {
+    color: #222a42;
+    padding: 15px 15px 0;
+    border: 0;
+
+    .card-title {
+      color: #1d253b;
+      font-weight: 100;
+      margin-bottom: 0.75rem;
+      font-size: 1.0625rem;
+      line-height: 1.45em;
+    }
+  }
+
+  .card-body {
+    padding: 15px 15px 10px !important;
+
+    .form-group {
+      margin-bottom: 10px;
+      position: relative;
+
+      label {
+        font-size: 0.95em !important;
+        margin-bottom: 5px;
+        color: #9a9a9a !important;
+      }
+
+      .form-control {
+        padding: 10px 18px;
+      }
+
+      .react-select {
+        .react-select__control {
+          border: 1px solid #e3e3e3;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          background-color: transparent;
+          border-radius: 19px;
+          min-height: 37px;
+          height: 37px;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          border-collapse: separate;
+          display: table;
+          width: 100%;
+          margin-bottom: 20px;          
+
+          .react-select__value-container {
+            display: table-cell;
+          }
+
+          .react-select__indicators {
+            width: 60px;
+            padding-right: 10px;
+            -ms-flex-align: end;
+            align-items: flex-end;
+            vertical-align: middle;
+            text-align: right;
+            display: table-cell;
+
+            .react-select__indicator-separator {
+              display: none;
+            }
+
+            .react-select__indicator {
+              padding: 0;
+              display: inline-block;
+            }
+          }
+        }
+      }
+
+      .rdt {
+        position: relative;
+
+        .form-control {
+          padding: 10px 18px;
+          color: #2c2c2c;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          background-color: transparent;
+          border: 1px solid #e3e3e3;
+          border-radius: 30px;
+          line-height: normal;
+          font-size: 0.8571em;
+          -webkit-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+          -o-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+          transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+        }
+
+        &.rdtOpen .rdtPicker {
+          opacity: 1;
+          visibility: visible;
+          margin-top: 0;
+          display: block;
+        }
+
+        .rdtPicker {
+          -webkit-transition: all 0.15s linear;
+          -o-transition: all 0.15s linear;
+          transition: all 0.15s linear;
+          margin-top: -20px;
+          visibility: hidden;
+          display: block;
+          opacity: 0;
+          top: 40px;
+          display: none;
+          position: absolute;
+          width: 100%;
+          padding: 4px;
+          margin-top: 1px;
+          z-index: 99999 !important;
+          background: #fff;
+          border-radius: 0.125rem;
+          -webkit-box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.2);
+          background-clip: padding-box;
+          min-width: 160px;
+
+          table {
+            width: 100%;
+            margin: 0;
+            border-color: #fff !important;
+
+            th {
+              text-align: center;
+              padding: 1px;
+
+              &.rdtPrev,
+              &.rdtNext {
+                font-size: 21px;
+                vertical-align: top;
+                border-radius: 50%;
+                line-height: 33px;
+                color: #e14eca;
+                cursor: pointer;
+
+                span {
+                  display: block;
+                }
+              }
+
+              &.rdtSwitch {
+                color: #e14eca;
+                width: 50px;
+                padding: 5px;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+            }
+
+            tr {
+              .dow {
+                text-align: center;
+                border-bottom: 1px solid #e3e3e3;
+                font-size: 12px;
+                text-transform: uppercase;
+                font-weight: inherit;
+                padding-bottom: 5px;
+                color: #e14eca;
+                padding-top: 10px;
+                width: 14.2857%;
+              }
+
+              .rdtOld, .rdtNew {
+                color: #ddd;
+              }
+
+              .rdtDay {
+                height: 30px;
+                line-height: 33px;
+                width: 30px;
+                text-align: center;
+                padding: 0;
+                border-radius: 50%;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .category {
+      text-transform: capitalize;
+      font-weight: 400;
+      color: #9a9a9a;
+      font-size: 0.9em;
+    }
+  }
+}
