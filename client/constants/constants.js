@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:3000/api'
+export const API_URL = '/api'
 export const API_USER_PATH = '/users'
 
 export const consultationOptions = [{ value: true, label: 'Yes' }, { value: false, label: 'No' }]
