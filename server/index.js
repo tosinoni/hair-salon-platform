@@ -52,7 +52,7 @@ const appDir = path.join(`${__dirname}/../dist/index.html`)
 app.use(serveStatic('./dist', { index: ['default.html', 'default.htm'] }))
 
 app.get('*', function(req, res) {
-    res.sendfile(appDir);
+    res.sendFile(appDir);
 });
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
