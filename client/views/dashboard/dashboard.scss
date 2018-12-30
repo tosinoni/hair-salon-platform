@@ -17,66 +17,6 @@
       .align-left {
         text-align: left;
       }
-
-      .ReactTable {
-        max-height: calc(100vh - 495px);
-      }
-
-      .table-full-width {
-        max-height: calc(100vh - 495px);
-        position: relative;
-      }
-
-      .table-responsive {
-        overflow: scroll;
-        padding-bottom: 10px;
-
-        .table {
-          margin-bottom: 0;
-          border-collapse: collapse;
-
-          .td-actions {
-            min-width: 90px;
-            padding-right: 15px;
-            display: flex;
-            justify-content: space-evenly;
-
-            .btn.btn-xs {
-              padding-left: 3px;
-              padding-right: 3px;
-              -webkit-transition: all 0.15s ease-in;
-              -o-transition: all 0.15s ease-in;
-              transition: all 0.15s ease-in;
-              font-size: 12px;
-              border-radius: 3px;
-              border: 0;
-
-              .icon {
-                width: 20px;
-                text-align: center;
-              }
-            }
-          }
-
-          td {
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-font-smoothing: antialiased;
-            font-family: Roboto, Helvetica Neue, Arial, sans-serif;
-            font-weight: 400;
-          }
-        }
-
-        .table > tbody > tr > td,
-        .table > tbody > tr > th,
-        .table > tfoot > tr > td,
-        .table > tfoot > tr > th,
-        .table > thead > tr > td,
-        .table > thead > tr > th {
-          padding: 12px 8px;
-          vertical-align: middle;
-          border-color: #e3e3e3;
-        }
-      }
     }
   }
 
