@@ -62,7 +62,7 @@ let chartExample1 = {
       labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
       datasets: [
         {
-          label: 'My First dataset',
+          label: 'User count',
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: '#1f8ef1',

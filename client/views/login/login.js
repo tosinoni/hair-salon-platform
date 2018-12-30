@@ -1,66 +1,136 @@
 import React from 'react'
+
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Form,
+  Container,
+  Row,
+  FormGroup,
+  Col,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+} from 'reactstrap'
+
+import Button from '../../components/customButton/customButton'
+import FontAwesome from 'react-fontawesome'
 import httpClient from '../../httpClient'
 import logoImage from '../../assets/logoSmall.png'
-import './login.css'
+import Swal from 'sweetalert2'
+import { isStringValid } from '../../util'
+
+import './login.scss'
+
+function getInitialState() {
+  return {
+    fields: {
+      username: '',
+      usernameState: '',
+      password: '',
+    },
+  }
+}
 
 class Login extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      fields: { username: '', password: '' },
-    }
+
+    this.state = getInitialState()
+    this.setLoginFieldState = this.setLoginFieldState.bind(this)
+    this.resetAllFieldStates = this.resetAllFieldStates.bind(this)
   }
 
-  onInputChange(evt) {
-    this.setState({
-      fields: {
-        ...this.state.fields,
-        [evt.target.name]: evt.target.value,
-      },
-    })
+  setLoginFieldState(input, fieldName, stateName) {
+    const fields = this.state.fields
+    fields[fieldName] = input
+    fields[stateName] = isStringValid(input) ? 'has-success' : 'has-danger'
+    this.setState({ fields })
+  }
+
+  resetAllFieldStates() {
+    this.setState(getInitialState())
+  }
+
+  setUsername(evt) {
+    this.setLoginFieldState(evt.target.value, 'username', 'usernameState')
+  }
+
+  setPassword(evt) {
+    this.setLoginFieldState(evt.target.value, 'password', 'passwordState')
   }
 
   onFormSubmit(evt) {
     evt.preventDefault()
-    httpClient.logIn(this.state.fields).then(user => {
-      this.setState({ fields: { username: '', password: '' } })
-      if (user) {
-        this.props.onLoginSuccess(user)
-        this.props.history.push('/')
-      }
-    })
+    console.log('here')
+    let fields = this.state.fields
+    let formValid = true
+
+    if (fields.usernameState !== 'has-success') {
+      fields.usernameState = 'has-danger'
+      formValid = false
+    }
+
+    if (fields.passwordState !== 'has-success') {
+      fields.passwordState = 'has-danger'
+      formValid = false
+    }
+
+    this.setState({ fields })
+
+    if (formValid) {
+      httpClient.logIn(this.state.fields).then(res => {
+        if (res.success) {
+          this.resetAllFieldStates()
+          const token = httpClient.setToken(res.token)
+          this.props.history.push('/')
+          Swal('Login Successful!!!', '', 'success')
+        } else {
+          Swal('Oops!!', res.error, 'error')
+        }
+      })
+    }
   }
 
   render() {
-    const { username, password } = this.state.fields
+    const { username, password, usernameState, passwordState } = this.state.fields
     return (
       <div className="LogIn container login-container">
-        <div className="col-md-4 well">
-          <img className="login-logo img-responsive" src={logoImage} />
-          <form onChange={this.onInputChange.bind(this)} onSubmit={this.onFormSubmit.bind(this)}>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Username"
-                name="username"
-                value={username}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="password"
-                placeholder="Password"
-                name="password"
-                value={password}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group text-center login-button">
-              <button className="btn btn-primary">Log In</button>
-            </div>
-          </form>
-        </div>
+        <Form className="login-form" onSubmit={this.onFormSubmit.bind(this)}>
+          <Card>
+            <CardHeader>
+              <img className="login-logo img-responsive" src={logoImage} />
+            </CardHeader>
+            <CardBody>
+              <FormGroup className={'has-label ' + usernameState}>
+                <label>Username: * </label>
+                <Input
+                  type="text"
+                  name="username"
+                  value={username}
+                  onChange={e => this.setUsername(e)}
+                />
+              </FormGroup>
+              <FormGroup className={'has-label ' + passwordState}>
+                <label>Password: * </label>
+                <Input
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={e => this.setPassword(e)}
+                />
+              </FormGroup>
+            </CardBody>
+            <CardFooter className="text-center">
+              <Button color="primary" type="submit" onClick={this.onFormSubmit.bind(this)}>
+                Log In
+              </Button>
+            </CardFooter>
+          </Card>
+        </Form>
       </div>
     )
   }

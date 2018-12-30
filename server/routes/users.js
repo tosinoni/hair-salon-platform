@@ -3,12 +3,15 @@ const express = require("express");
 const verifyToken = require('../auth/auth.js').verifyToken
 const router = express.Router();
 
+router.get('/verifyToken', verifyToken)
 
-router.post("/register", userController.registerUser)
 router.post('/login', userController.login)
 
 router.use(verifyToken)
-router.get('/', userController.getAllUser)
+router.post("/register", userController.registerUser)
+router.post('/changePassword', userController.changePassword)
+router.get('/followup', userController.getAllUsersToFollowUp)
+router.get('/', userController.getAllUsers)
 router.route('/:id')
 	.get(userController.findUserById)
 	.put(userController.UpdateUser)

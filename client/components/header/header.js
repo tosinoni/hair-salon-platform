@@ -36,6 +36,7 @@ class Header extends React.Component {
 
     this.updateColor = this.updateColor.bind(this)
     this.toggleCollapse = this.toggleCollapse.bind(this)
+    this.logout = this.logout.bind(this)
   }
 
   componentDidMount() {
@@ -71,6 +72,10 @@ class Header extends React.Component {
     this.setState({
       collapseOpen: !this.state.collapseOpen,
     })
+  }
+
+  logout() {
+    this.props.onLogOut();
   }
 
   render() {
@@ -134,13 +139,9 @@ class Header extends React.Component {
                     <b className="caret d-none d-lg-block d-xl-block" />
                     <p className="d-lg-none">Log out</p>
                   </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" right tag="ul">
+                  <DropdownMenu className="dropdown-navbar" right tag="ul"> 
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
-                    </NavLink>
-                    <DropdownItem divider tag="li" />
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                      <DropdownItem className="nav-item" onClick={this.logout}>Log out</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>

@@ -1,17 +1,17 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt-nodejs');
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
+const ObjectIdSchema = Schema.ObjectId
+const bcrypt = require('bcrypt-nodejs')
 
 
 const User = new Schema(
   {
-    id: Number,
-    firstname: String,
+    _id: ObjectIdSchema,
+    givenNames: String,
     lastname: String,
-    middlename: String,
     username: String,
-    telephoneNum: String,
-    alternateTelephoneNum: String,
+    phoneNumber: String,
+    alternateTelephoneNumber: String,
     email: String,
     consultationOnly: Boolean,
     presentImmigrationStatus: String,
@@ -22,7 +22,7 @@ const User = new Schema(
     notes: String,
     password: String,
     avatar: String,
-    role: String
+    isAdmin: Boolean
   }
 );
 
@@ -40,10 +40,12 @@ User.methods.validPassword = function(password) {
 // and if so, encrypt new password before saving:
 User.pre('save', function(next) {
 	if(this.isModified('password')) {
+    
 		this.password = this.generateHash(this.password)
 	}
 	next();
 });
 
+mongoose.set('useFindAndModify', false)
 // export the new Schema so we could modify it using Node.js
 module.exports = mongoose.model("User", User);

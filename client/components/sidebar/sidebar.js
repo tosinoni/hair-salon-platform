@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { Nav } from 'reactstrap'
+import { Nav, Collapse } from 'reactstrap'
 import FontAwesome from 'react-fontawesome'
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
@@ -100,7 +100,7 @@ class Sidebar extends React.Component {
           </div>
           <Nav>
             {routes.map((prop, key) => {
-              if (prop.redirect) return null
+              if (prop.redirect || !prop.isSideBar) return null
               return (
                 <li className={this.activeRoute(prop.path)} key={key}>
                   <Link

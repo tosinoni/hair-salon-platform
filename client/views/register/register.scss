@@ -1,4 +1,4 @@
-.register {
+.card.register {
   background: #fff;
   box-shadow: 0 1px 15px 0 hsla(0, 0%, 48.2%, 0.05);
   border: 0;
@@ -24,8 +24,43 @@
     padding: 15px 15px 10px !important;
 
     .form-group {
-      margin-bottom: 10px;
+      margin-bottom: 30px;
       position: relative;
+
+      &.has-danger {
+        .form-control {
+          border-color: #ffcfcf !important;
+          color: #ff3636 !important;
+          background-color: hsla(0, 0%, 87%, 0.1) !important;
+        }
+
+        &::after {
+          content: '\f00d';
+          color: #ff3636;
+        }
+      }
+
+      &.has-success {
+        .form-control {
+          border-color: #e3e3e3;
+        }
+
+        &::after {
+          content: '\f00c';
+          color: #18ce0f;
+        }
+      }
+
+      &.has-success::after,
+      &.has-danger::after {
+        font-family: FontAwesome;
+        display: inline-block;
+        position: absolute;
+        right: 20px;
+        bottom: 10px;
+        font-size: 11px;
+        top: 35px;
+      }
 
       label {
         font-size: 0.95em !important;
@@ -35,9 +70,22 @@
 
       .form-control {
         padding: 10px 18px;
+        background-color: transparent;
+        border-color: rgba(29, 37, 59, 0.3);
+        border-radius: 30px;
+        line-height: normal;
+        font-size: 0.8571em;
       }
 
       .react-select {
+        &.has-danger {
+          .react-select__control, .react-select__indicator {
+            border-color: #ffcfcf;
+            color: #ff3636;
+            background-color: hsla(0, 0%, 87%, 0.1);
+          }
+        }
+
         .react-select__control {
           border: 1px solid #e3e3e3;
           -webkit-box-shadow: none;
@@ -51,7 +99,8 @@
           border-collapse: separate;
           display: table;
           width: 100%;
-          margin-bottom: 20px;          
+          margin-bottom: 20px;
+          font-size: 0.8571em;
 
           .react-select__value-container {
             display: table-cell;
@@ -173,7 +222,8 @@
                 width: 14.2857%;
               }
 
-              .rdtOld, .rdtNew {
+              .rdtOld,
+              .rdtNew {
                 color: #ddd;
               }
 

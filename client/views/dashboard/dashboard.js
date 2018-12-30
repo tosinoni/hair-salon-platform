@@ -4,8 +4,13 @@ import classNames from 'classnames'
 // react plugin used to create charts
 import { Line, Bar } from 'react-chartjs-2'
 
+import FontAwesome from 'react-fontawesome'
+
+import Button from '../../components/customButton/customButton'
+
+import ReactTable from 'react-table'
+
 import {
-  Button,
   ButtonGroup,
   Card,
   CardHeader,
@@ -24,11 +29,14 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap'
 
-import {
-  chartExample1
-} from "../../constants/charts";
+import { chartExample1 } from '../../constants/charts'
+
+import httpClient from '../../httpClient'
+
+import { isArrayEmpty } from '../../util'
 
 import './dashboard.scss'
+import Tasks from '../../components/tasks/tasks'
 
 class DashboardView extends React.Component {
   constructor(props) {
@@ -36,14 +44,60 @@ class DashboardView extends React.Component {
 
     this.state = {
       bigChartData: 'data1',
+      usersToFollowup: [],
     }
 
     this.setBgChartData = this.setBgChartData.bind(this)
+
+    httpClient.getAllUsersToFollowUp().then(res => {
+      if (res && res.success && !isArrayEmpty(res.data)) {
+        const data = this.getUsersToFollowUp(res.data)
+        this.setState({ usersToFollowup: data })
+      }
+    })
   }
 
   setBgChartData(name) {
     this.setState({
       bigChartData: name,
+    })
+  }
+
+  editUserClicked(userObj) {
+    this.props.history.push({
+      pathname: '/profile',
+      state: { id: userObj.userId },
+    })
+  }
+
+  getUsersToFollowUp(users) {
+    return users.map((user, key) => {
+      return {
+        id: key,
+        userId: user._id,
+        lastname: user.lastname,
+        givenNames: user.givenNames,
+        purposeOfFollowup: user.purposeOfFollowup,
+        followupDate: user.followupDate,
+        actions: (
+          // we've added some custom button actions
+          <div className="actions-center">
+            {/* use this button to add a like kind of action */}
+            <Button
+              onClick={() => {
+                const obj = this.state.usersToFollowup.find(o => o.id === key)
+                this.editUserClicked(obj)
+              }}
+              color="info"
+              size="sm"
+              round
+              icon
+            >
+              <FontAwesome name="edit" />
+            </Button>{' '}
+          </div>
+        ),
+      }
     })
   }
 
@@ -77,243 +131,56 @@ class DashboardView extends React.Component {
           </Col>
         </Row>
         <Row>
-            <Col md="12">
-              <Card className="card-tasks">
-                <CardHeader>
-                  <h6 className="title d-inline">Tasks(5)</h6>
-                  <p className="card-category d-inline"> today</p>
-                </CardHeader>
-                <CardBody>
-                  <div className="table-full-width table-responsive">
-                    <Table>
-                      <tbody>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input defaultValue="" type="checkbox" />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">Update the Documentation</p>
-                            <p className="text-muted">
-                              Dwuamish Head, Seattle, WA 8:47 AM
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip636901683"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip636901683"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input
-                                  defaultChecked
-                                  defaultValue=""
-                                  type="checkbox"
-                                />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">GDPR Compliance</p>
-                            <p className="text-muted">
-                              The GDPR is a regulation that requires businesses
-                              to protect the personal data and privacy of Europe
-                              citizens for transactions that occur within EU
-                              member states.
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip457194718"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip457194718"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input defaultValue="" type="checkbox" />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">Solve the issues</p>
-                            <p className="text-muted">
-                              Fifty percent of all respondents said they would
-                              be more likely to shop at a company
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip362404923"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip362404923"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input defaultValue="" type="checkbox" />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">Release v2.0.0</p>
-                            <p className="text-muted">
-                              Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip818217463"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip818217463"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input defaultValue="" type="checkbox" />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">Export the processed files</p>
-                            <p className="text-muted">
-                              The report also shows that consumers will not
-                              easily forgive a company once a breach exposing
-                              their personal data occurs.
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip831835125"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip831835125"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                        <tr className="table-row">
-                          <td>
-                            <FormGroup check>
-                              <Label check>
-                                <Input defaultValue="" type="checkbox" />
-                                <span className="form-check-sign">
-                                  <span className="check" />
-                                </span>
-                              </Label>
-                            </FormGroup>
-                          </td>
-                          <td>
-                            <p className="title">Arival at export process</p>
-                            <p className="text-muted">
-                              Capitol Hill, Seattle, WA 12:34 AM
-                            </p>
-                          </td>
-                          <td className="td-actions text-right">
-                            <Button
-                              color="link"
-                              id="tooltip217595172"
-                              title=""
-                              type="button"
-                            >
-                              <i className="tim-icons icon-pencil" />
-                            </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip217595172"
-                              placement="right"
-                            >
-                              Edit Task
-                            </UncontrolledTooltip>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+          <Col md="12">
+            <Card className="card-tasks">
+              <CardHeader>
+                <h6 className="card-title">Tasks</h6>
+                <p className="card-category">Users follow-up arranged in the most recent order</p>
+              </CardHeader>
+              <CardBody>
+                <ReactTable
+                  data={this.state.usersToFollowup}
+                  filterable
+                  defaultFilterMethod={(filter, row) =>
+                    row[filter.id].toUpperCase().includes(filter.value.toUpperCase())
+                  }
+                  columns={[
+                    {
+                      Header: 'Last Name',
+                      accessor: 'lastname',
+                      className: 'actions-center',
+                    },
+                    {
+                      Header: 'Given Names',
+                      accessor: 'givenNames',
+                      className: 'actions-center',
+                    },
+                    {
+                      Header: 'Follow-up reason',
+                      accessor: 'purposeOfFollowup',
+                      className: 'actions-center',
+                    },
+                    {
+                      Header: 'Follow-up Date',
+                      accessor: 'followupDate',
+                      className: 'actions-center',
+                    },
+                    {
+                      Header: 'Actions',
+                      accessor: 'actions',
+                      sortable: false,
+                      filterable: false,
+                    },
+                  ]}
+                  defaultPageSize={10}
+                  showPaginationTop
+                  showPaginationBottom={false}
+                  className="-striped -highlight"
+                />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
       </div>
     )
   }

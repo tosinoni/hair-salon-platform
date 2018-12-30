@@ -20,8 +20,8 @@ class Admin extends React.Component {
       sidebarOpened: document.documentElement.className.indexOf('nav-open') !== -1,
     }
 
-    this.toggleSidebar = this.toggleSidebar.bind(this);
-    this.handleBgClick = this.handleBgClick.bind(this);
+    this.toggleSidebar = this.toggleSidebar.bind(this)
+    this.handleBgClick = this.handleBgClick.bind(this)
   }
 
   componentDidMount() {
@@ -92,15 +92,15 @@ class Admin extends React.Component {
           routes={routes}
           bgColor={this.state.backgroundColor}
           logo={{
-            outterLink: "" + this.props.location.pathname,
-            text: "Olalere Law Office",
-            imgSrc: logoImage
+            outterLink: '' + this.props.location.pathname,
+            text: 'Olalere Law Office',
+            imgSrc: logoImage,
           }}
           toggleSidebar={this.toggleSidebar}
         />
         <div className="main-panel" ref="mainPanel" data={this.state.backgroundColor}>
-          <Header 
-            {...this.props} 
+          <Header
+            {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
             toggleSidebar={this.toggleSidebar}
             sidebarOpened={this.state.sidebarOpened}

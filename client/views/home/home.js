@@ -1,6 +1,6 @@
 import React from 'react'
 import Login from '../login/login'
-import './home.css'
+import './home.scss'
 
 
 const Home = (props) => {
@@ -11,7 +11,7 @@ const Home = (props) => {
 
 	return (
 		<div className='home'>
-			<Login {...props} onLoginSuccess={onLoginSuccess}/>
+			<Login {...props}/>
 		</div>
 	)
 }

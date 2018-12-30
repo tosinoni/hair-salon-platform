@@ -14,15 +14,297 @@ import {
   Col,
 } from 'reactstrap'
 
+import {
+  isNameValid,
+  isEmailValid,
+  isPhoneNumberValid,
+  isStringValid,
+  isBoolean,
+  getSelectionFromOptions,
+} from '../../util'
+
+import {
+  consultationOptions,
+  immigrationStatuses,
+  followUpReasons,
+} from '../../constants/constants'
+
+import Datetime from 'react-datetime'
+
+import Select from 'react-select'
+
 import profileImage from '../../assets/profile-image.png'
 import './profile.scss'
+import httpClient from '../../httpClient'
+import Swal from 'sweetalert2'
 
 class Admin extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      user: '',
+    }
+
+    this.goBackToDashBoard = this.goBackToDashBoard.bind(this)
+    this.setUserFieldState = this.setUserFieldState.bind(this)
+    this.editUserSubmit = this.editUserSubmit.bind(this)
+    this.resetFieldState = this.resetFieldState.bind(this)
+    this.resetState = this.resetState.bind(this)
+  }
+
+  goBackToDashBoard() {
+    this.props.history.push('/')
+    Swal('Oops', 'User not found', 'error')
+  }
+
+  convetServerModelToClient(user) {
+    user.consultationOnlySelection = getSelectionFromOptions(
+      user.consultationOnly,
+      consultationOptions,
+    )
+    user.presentImmigrationStatusSelection = getSelectionFromOptions(
+      user.presentImmigrationStatus,
+      immigrationStatuses,
+    )
+    user.purposeOfFollowupSelection = getSelectionFromOptions(
+      user.purposeOfFollowup,
+      followUpReasons,
+    )
+
+    user.issueDate = user.issueDate ? new Date(user.issueDate) : ''
+    user.expiryDate = user.expiryDate ? new Date(user.expiryDate) : ''
+    user.followupDate = user.followupDate ? new Date(user.followupDate) : ''
+
+    return user
+  }
+
+  componentDidMount() {
+    const state = this.props && this.props.location ? this.props.location.state : ''
+    const userId = state ? state.id : ''
+
+    if (userId) {
+      httpClient.getUser(userId).then(res => {
+        if (res.success) {
+          this.setState({ user: this.convetServerModelToClient(res.data) })
+        } else {
+          this.goBackToDashBoard()
+        }
+      })
+    } else {
+      this.goBackToDashBoard()
+    }
+  }
+
+  setUserFieldState(input, fieldName, stateName, validateFn) {
+    const user = this.state.user
+
+    user[fieldName] = input
+    user[stateName] = validateFn(input) ? 'has-success' : 'has-danger'
+
+    this.setState({ user })
+  }
+
+  resetFieldState(value, fieldName, stateName) {
+    const user = this.state.user
+
+    user[fieldName] = value
+    user[stateName] = ''
+
+    this.setState({ user })
+  }
+
+  setLastName(evt) {
+    this.setUserFieldState(evt.target.value, 'lastname', 'lastNameState', isNameValid)
+  }
+
+  setGivenNames(evt) {
+    this.setUserFieldState(evt.target.value, 'givenNames', 'givenNamesState', isNameValid)
+  }
+
+  setEmail(evt) {
+    this.setUserFieldState(evt.target.value, 'email', 'emailState', isEmailValid)
+  }
+
+  setPhoneNumber(evt) {
+    this.setUserFieldState(evt.target.value, 'phoneNumber', 'phoneNumberState', isPhoneNumberValid)
+  }
+
+  setAlternatePhoneNumber(evt) {
+    const alternatePhoneNumInput = evt.target.value
+
+    if (alternatePhoneNumInput) {
+      this.setUserFieldState(
+        alternatePhoneNumInput,
+        'alternateTelephoneNumber',
+        'alternateTelephoneNumberState',
+        isPhoneNumberValid,
+      )
+    } else {
+      this.resetFieldState(
+        alternatePhoneNumInput,
+        'alternateTelephoneNumber',
+        'alternateTelephoneNumberState',
+      )
+    }
+  }
+
+  setConsultationOption(consultationOption) {
+    const user = this.state.user
+
+    user.consultationOnlySelection = consultationOption
+    user.consultationOnly = consultationOption.value
+    user.consultationOnlyState = isBoolean(consultationOption.value) ? 'has-success' : 'has-danger'
+
+    this.setState({ user })
+  }
+
+  setPresentImmigrationStatus(immigrationStatus) {
+    const user = this.state.user
+
+    user.presentImmigrationStatusSelection = immigrationStatus
+    user.presentImmigrationStatus = immigrationStatus.value
+    user.presentImmigrationStatusState = isStringValid(immigrationStatus.value)
+      ? 'has-success'
+      : 'has-danger'
+
+    this.setState({ user })
+  }
+
+  setIssueDate(moment) {
+    const user = this.state.user
+    const date = moment && moment.toDate ? moment.toDate() : ''
+
+    user.issueDateSelection = moment
+    user.issueDate = date
+    user.issueDateState =
+      isStringValid(date) && (date >= user.expiryDate || !user.expiryDate)
+        ? 'has-success'
+        : 'has-danger'
+
+    this.setState({ user })
+  }
+
+  setExpiryDate(moment) {
+    const user = this.state.user
+    const date = moment && moment.toDate ? moment.toDate() : ''
+
+    user.expiryDateSelection = moment
+    user.expiryDate = date
+    user.expiryDateState =
+      isStringValid(date) && (date >= user.issueDate || !user.issueDate)
+        ? 'has-success'
+        : 'has-danger'
+
+    this.setState({ user })
+  }
+
+  setPurposeOfFollowup(purpose) {
+    const user = this.state.user
+
+    user.purposeOfFollowupSelection = purpose
+    user.purposeOfFollowup = purpose ? purpose.value : ''
+
+    if (purpose) {
+      user.purposeOfFollowupState = isStringValid(purpose.value) ? 'has-success' : 'has-danger'
+    }
+
+    this.setState({ user })
+  }
+
+  setFollowupDate(moment) {
+    const user = this.state.user
+    const date = moment && moment.toDate ? moment.toDate() : ''
+    const currentDate = Date.now()
+
+    user.followupDate = date
+    user.followupDateSelection = moment
+
+    if (date) {
+      user.followupDateState =
+        isStringValid(date) && date >= currentDate ? 'has-success' : 'has-danger'
+    } else {
+      user.followupDateState = ''
+    }
+
+    this.setState({ user })
+  }
+
+  setNotes(evt) {
+    const user = this.state.user
+
+    user.notes = evt.target.value
+
+    this.setState({ user })
+  }
+
+  isEditUserFormValid() {
+    let user = this.state.user
+
+    return (
+      user.lastNameState !== 'has-danger' &&
+      user.givenNamesState !== 'has-danger' &&
+      user.emailState !== 'has-danger' &&
+      user.phoneNumberState !== 'has-danger' &&
+      user.alternateTelephoneNumberState !== 'has-danger' &&
+      user.consultationOnlyState !== 'has-danger' &&
+      user.consultationOnlyState !== 'has-danger' &&
+      user.presentImmigrationStatusState !== 'has-danger' &&
+      user.issueDateState !== 'has-danger' &&
+      user.expiryDateState !== 'has-danger' &&
+      user.purposeOfFollowupState !== 'has-danger' &&
+      user.followupDateState !== 'has-danger'
+    )
+  }
+
+  resetState() {
+    let user = this.state.user
+
+    user.lastNameState = ''
+    user.givenNamesState = ''
+    user.emailState = ''
+    user.phoneNumberState = ''
+    user.alternateTelephoneNumberState = ''
+    user.consultationOnlyState = ''
+    user.consultationOnlyState = ''
+    user.presentImmigrationStatusState = ''
+    user.issueDateState = ''
+    user.expiryDateState = ''
+    user.purposeOfFollowupState = ''
+    user.followupDateState = ''
+
+    this.setState({ user })
+  }
+
+  editUserSubmit(evt) {
+    evt.preventDefault()
+
+    if (this.isEditUserFormValid()) {
+      httpClient.updateUser(this.state.user).then(res => {
+        if (res.success) {
+          Swal('Yaah', 'User updated successfully', 'success')
+          this.resetState()
+        } else {
+          Swal('Save Failed!!!', res.error, 'error')
+        }
+      })
+    } else {
+      Swal('Save Failed!!!', 'Please address the errors in red', 'error')
+    }
+  }
+
+  getDisplayName() {
+    let user = this.state.user
+
+    const givenNames = user && user.givenNames ? user.givenNames : ''
+    const lastname = user && user.lastname ? user.lastname : ''
+
+    return lastname + ' ' + givenNames
   }
 
   render() {
+    const { user } = this.state
+
     return (
       <div className="content">
         <Row>
@@ -34,87 +316,158 @@ class Admin extends React.Component {
               <CardBody>
                 <Form>
                   <Row>
-                    <Col className="pr-md-1" md="5">
-                      <FormGroup>
-                        <label>Company (disabled)</label>
+                    <Col className="pr-md-1" md="4">
+                      <FormGroup className={'has-label ' + user.lastNameState}>
+                        <label>Last Name: *</label>
                         <Input
-                          defaultValue="Creative Code Inc."
-                          disabled
-                          placeholder="Company"
+                          value={user.lastname}
                           type="text"
+                          onChange={e => this.setLastName(e)}
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="px-md-1" md="3">
-                      <FormGroup>
-                        <label>Username</label>
-                        <Input defaultValue="michael23" placeholder="Username" type="text" />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" md="4">
-                      <FormGroup>
-                        <label htmlFor="exampleInputEmail1">Email address</label>
-                        <Input placeholder="mike@email.com" type="email" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1" md="6">
-                      <FormGroup>
-                        <label>First Name</label>
-                        <Input defaultValue="Mike" placeholder="Company" type="text" />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" md="6">
-                      <FormGroup>
-                        <label>Last Name</label>
-                        <Input defaultValue="Andrew" placeholder="Last Name" type="text" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label>Address</label>
+                    <Col className="pl-md-1" md="8">
+                      <FormGroup className={'has-label ' + user.givenNamesState}>
+                        <label>Given Names: *</label>
                         <Input
-                          defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                          placeholder="Home Address"
+                          value={user.givenNames}
                           type="text"
+                          onChange={e => this.setGivenNames(e)}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
                     <Col className="pr-md-1" md="4">
-                      <FormGroup>
-                        <label>City</label>
-                        <Input defaultValue="Mike" placeholder="City" type="text" />
+                      <FormGroup className={'has-label ' + user.emailState}>
+                        <label>Email: * </label>
+                        <Input type="email" value={user.email} onChange={e => this.setEmail(e)} />
                       </FormGroup>
                     </Col>
                     <Col className="px-md-1" md="4">
-                      <FormGroup>
-                        <label>Country</label>
-                        <Input defaultValue="Andrew" placeholder="Country" type="text" />
+                      <FormGroup className={'has-label ' + user.phoneNumberState}>
+                        <label>Tel: *</label>
+                        <Input
+                          type="text"
+                          value={user.phoneNumber}
+                          onChange={e => this.setPhoneNumber(e)}
+                        />
                       </FormGroup>
                     </Col>
                     <Col className="pl-md-1" md="4">
-                      <FormGroup>
-                        <label>Postal Code</label>
-                        <Input placeholder="ZIP Code" type="number" />
+                      <FormGroup className={'has-label ' + user.alternateTelephoneNumberState}>
+                        <label>Alternative Tel: </label>
+                        <Input
+                          type="text"
+                          value={user.alternateTelephoneNumber}
+                          onChange={e => this.setAlternatePhoneNumber(e)}
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="8">
+                    <Col className="pr-md-1" xs={12} md={6}>
                       <FormGroup>
-                        <label>About Me</label>
+                        <label>Consultation Option: * </label>
+                        <Select
+                          className={'react-select primary ' + user.consultationOnlyState}
+                          classNamePrefix="react-select"
+                          name="consultationOption"
+                          value={user.consultationOnlySelection}
+                          options={consultationOptions}
+                          onChange={value => this.setConsultationOption(value)}
+                          isSearchable
+                          components={{
+                            IndicatorSeparator: () => null,
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-md-1" xs={12} md={6}>
+                      <FormGroup>
+                        <label>Present Immigration Status: * </label>
+                        <Select
+                          className={'react-select primary ' + user.presentImmigrationStatusState}
+                          classNamePrefix="react-select"
+                          name="immigrationStatus"
+                          value={user.presentImmigrationStatusSelection}
+                          options={immigrationStatuses}
+                          onChange={value => this.setPresentImmigrationStatus(value)}
+                          isSearchable
+                          components={{
+                            IndicatorSeparator: () => null,
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-md-1" md="6">
+                      <FormGroup className={user.issueDateState}>
+                        <label>Issue Date: * </label>
+                        <Datetime
+                          timeFormat={false}
+                          closeOnSelect={true}
+                          value={user.issueDate}
+                          onChange={date => this.setIssueDate(date)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pl-md-1" md="6">
+                      <FormGroup className={user.expiryDateState}>
+                        <label>Expiry Date: * </label>
+                        <Datetime
+                          timeFormat={false}
+                          closeOnSelect={true}
+                          value={user.expiryDate}
+                          onChange={date => this.setExpiryDate(date)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-md-1" md="6">
+                      <FormGroup>
+                        <label>Purpose Of Follow-up: </label>
+                        <Select
+                          className={'react-select primary ' + user.purposeOfFollowupState}
+                          classNamePrefix="react-select"
+                          name="immigrationStatus"
+                          value={user.purposeOfFollowupSelection}
+                          options={followUpReasons}
+                          onChange={value => this.setPurposeOfFollowup(value)}
+                          isSearchable
+                          isClearable={true}
+                          components={{
+                            IndicatorSeparator: () => null,
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pl-md-1" md="6">
+                      <FormGroup className={user.followupDateState}>
+                        <label>Follow-up Date: </label>
+                        <Datetime
+                          timeFormat={false}
+                          closeOnSelect={true}
+                          value={user.followupDate}
+                          onChange={date => this.setFollowupDate(date)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label>Notes: </label>
                         <Input
                           cols="80"
-                          defaultValue="Lamborghini Mercy, Your chick she so thirsty, I'm in
-                            that two seat Lambo."
-                          placeholder="Here can be your description"
                           rows="4"
                           type="textarea"
+                          value={user.notes}
+                          onChange={e => this.setNotes(e)}
                         />
                       </FormGroup>
                     </Col>
@@ -122,7 +475,12 @@ class Admin extends React.Component {
                 </Form>
               </CardBody>
               <CardFooter>
-                <Button className="btn-fill" color="primary" type="submit">
+                <Button
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  onClick={e => this.editUserSubmit(e)}
+                >
                   Save
                 </Button>
               </CardFooter>
@@ -139,14 +497,9 @@ class Admin extends React.Component {
                   <div className="block block-four" />
                   <div className="avatar-container">
                     <img alt="..." className="avatar" src={profileImage} />
-                    <h5 className="title">Mike Andrew</h5>
+                    <h5 className="title">{this.getDisplayName()}</h5>
                   </div>
-                  <p className="description">Ceo/Co-Founder</p>
-                </div>
-                <div className="card-description">
-                  Do not be scared of the truth because we need to restart the human foundation in
-                  truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the
-                  back is...
+                  <p className="description">{user.presentImmigrationStatus}</p>
                 </div>
               </CardBody>
             </Card>
