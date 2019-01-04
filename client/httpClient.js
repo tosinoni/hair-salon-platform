@@ -111,7 +111,16 @@ httpClient.getUser = function(userId) {
 httpClient.getAllUsers = function() {
   return this({ method: 'get', url: '/users' })
     .then(res => {
-      console.log(res.data)
+      return res.data
+    })
+    .catch(err => {
+      return err
+    })
+}
+
+httpClient.getTotalUsersToFollowupPerMonthInCurrentyear = function() {
+  return this({ method: 'get', url: '/users/chartData' })
+    .then(res => {
       return res.data
     })
     .catch(err => {
@@ -122,7 +131,6 @@ httpClient.getAllUsers = function() {
 httpClient.getAllUsersToFollowUp = function() {
   return this({ method: 'get', url: '/users/followup' })
     .then(res => {
-      console.log(res.data)
       return res.data
     })
     .catch(err => {

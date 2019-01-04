@@ -28,15 +28,41 @@ exports.searchForUsers = function(req, res) {
   )
 }
 
+exports.getTotalUsersToFollowupPerMonthInCurrentyear = function(req, res) {
+  //create next year date
+  const currentYear = new Date().getFullYear()
+  const previousYearDate = new Date(currentYear - 1 + '-01-01')
+  const nextYearDate = new Date(currentYear + 1 + '-01-01')
+
+  User.aggregate(
+    [
+      {
+        $match: {
+          followupDate: { $gte: previousYearDate, $lt: nextYearDate },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$followupDate' },
+          users: { $sum: 1 },
+        },
+      },
+    ],
+    (err, data) => {
+      if (err) return res.status(204).send({ success: false, error: 'could not get the users' })
+      return res.status(200).send({ success: true, data: data && data.length > 0 ? data : [] })
+    },
+  )
+}
+
 //all users to follow up three months from now
 exports.getAllUsersToFollowUp = function(req, res) {
   let cutoff = new Date()
-  cutoff.setHours(0,0,0,0)
+  cutoff.setHours(0, 0, 0, 0)
   cutoff.setDate(cutoff.getDate() + 90)
 
   let currentDate = new Date()
-  currentDate.setHours(0,0,0,0)
-
+  currentDate.setHours(0, 0, 0, 0)
 
   User.find({ followupDate: { $gte: currentDate, $lt: cutoff } })
     .sort('followupDate')

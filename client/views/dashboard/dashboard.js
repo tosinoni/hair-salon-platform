@@ -31,7 +31,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap'
 
-import { chartExample1 } from '../../constants/charts'
+import { chartExample1, getChartParameters } from '../../constants/charts'
 
 import httpClient from '../../httpClient'
 
@@ -46,7 +46,9 @@ class DashboardView extends React.Component {
 
     this.state = {
       bigChartData: 'data1',
+      data: chartExample1['data1'],
       usersToFollowup: [],
+      sumOfUsers: 0,
     }
 
     this.setBgChartData = this.setBgChartData.bind(this)
@@ -57,8 +59,30 @@ class DashboardView extends React.Component {
         this.setState({ usersToFollowup: data })
       }
     })
+
+    httpClient.getTotalUsersToFollowupPerMonthInCurrentyear().then(res => {
+      if (res && res.success && !isArrayEmpty(res.data)) {
+        this.parseFollowUpUserPerMonthData(res.data)
+      }
+    })
   }
 
+  parseFollowUpUserPerMonthData(userData) {
+    let dataPoints = new Array(12).fill(0)
+    let sumOfUsers = 0
+
+    for (let index=0; index < userData.length; index++) {
+      let user = userData[index]
+      if (user && user._id) {
+        const index = user._id - 1
+        dataPoints[index] = user.users
+        sumOfUsers += dataPoints[index]
+      }
+    }
+    
+    const chartLineData = getChartParameters(this.refs.linegraph.chartInstance.canvas, dataPoints)
+    this.setState({ data: chartLineData, totalUsers: sumOfUsers })
+  }
   setBgChartData(name) {
     this.setState({
       bigChartData: name,
@@ -116,17 +140,14 @@ class DashboardView extends React.Component {
               <CardHeader>
                 <Row>
                   <Col className="text-left" sm="6">
-                    <h5 className="card-category">Total Users Per Month</h5>
-                    <CardTitle tag="h2">50,000</CardTitle>
+                    <h5 className="card-category">Total Users to followup Per Month this year</h5>
+                    <CardTitle tag="h2">{this.state.totalUsers}</CardTitle>
                   </Col>
                 </Row>
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Line
-                    data={chartExample1[this.state.bigChartData]}
-                    options={chartExample1.options}
-                  />
+                  <Line ref="linegraph" data={this.state.data} options={chartExample1.options} />
                 </div>
               </CardBody>
             </Card>

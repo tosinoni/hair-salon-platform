@@ -87,7 +87,6 @@ class Header extends React.Component {
   }
 
   handleSearch(query) {
-    console.log(query)
     this.setState({ isLoading: true })
 
     httpClient.searchForUsers(query).then((res) => {
