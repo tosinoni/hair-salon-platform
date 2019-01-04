@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'font-awesome/css/font-awesome.min.css'
 import 'react-table/react-table.css'
 import 'react-datetime/css/react-datetime.css'
+import 'react-bootstrap-typeahead/css/Typeahead.css'
+import 'react-bootstrap-typeahead/css/Typeahead-bs4.css'
 
 import './styles/app.scss'
 

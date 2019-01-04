@@ -20,9 +20,19 @@ import {
   Nav,
   Container,
   Modal,
+  Popover,
+  PopoverHeader,
+  PopoverBody,
 } from 'reactstrap'
 
+import { AsyncTypeahead } from 'react-bootstrap-typeahead'
+
 import profileImage from '../../assets/profile-image.png'
+
+import httpClient from '../../httpClient'
+
+import SearchMenuItem from '../../components/searchMenuItem/searchMenuItem'
+
 import './header.scss'
 
 class Header extends React.Component {
@@ -30,13 +40,15 @@ class Header extends React.Component {
     super(props)
     this.state = {
       collapseOpen: false,
-      modalSearch: false,
+      isLoading: false,
+      options: [],
       color: 'navbar-transparent',
     }
 
     this.updateColor = this.updateColor.bind(this)
     this.toggleCollapse = this.toggleCollapse.bind(this)
     this.logout = this.logout.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
   }
 
   componentDidMount() {
@@ -74,8 +86,22 @@ class Header extends React.Component {
     })
   }
 
+  handleSearch(query) {
+    console.log(query)
+    this.setState({ isLoading: true })
+
+    httpClient.searchForUsers(query).then((res) => {
+      if (res.success) {
+        this.setState({
+          isLoading: false,
+          options: res.data,
+        })
+      }
+    })
+  }
+
   logout() {
-    this.props.onLogOut();
+    this.props.onLogOut()
   }
 
   render() {
@@ -117,7 +143,17 @@ class Header extends React.Component {
               <Nav className="ml-auto" navbar>
                 <form>
                   <InputGroup className="no-border">
-                    <Input placeholder="Search..." />
+                    <AsyncTypeahead
+                      {...this.state}
+                      labelKey="fullname"
+                      filterBy={['lastname', 'givenNames', 'fullname']}
+                      minLength={2}
+                      onSearch={this.handleSearch}
+                      placeholder="Search for user..."
+                      renderMenuItemChildren={(option, props) => (
+                        <SearchMenuItem {...this.props} user={option} />
+                      )}
+                    />
                     <InputGroupAddon addonType="append">
                       <InputGroupText>
                         <FontAwesome className="icon" name="search" />
@@ -139,9 +175,11 @@ class Header extends React.Component {
                     <b className="caret d-none d-lg-block d-xl-block" />
                     <p className="d-lg-none">Log out</p>
                   </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" right tag="ul"> 
+                  <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item" onClick={this.logout}>Log out</DropdownItem>
+                      <DropdownItem className="nav-item" onClick={this.logout}>
+                        Log out
+                      </DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>

@@ -8,6 +8,7 @@ function isUserBodyNotValid(userBody) {
     phoneNumber,
     issueDate,
     expiryDate,
+    maritalStatus,
     presentImmigrationStatus,
     followupDate,
   } = userBody
@@ -21,10 +22,10 @@ function isUserBodyNotValid(userBody) {
   } else if (!phoneNumber) {
     return 'Please provide a phone number'
   } else if (!presentImmigrationStatus) {
-    return 'Please provide your current immigration status'
-  } else if (!issueDate || !expiryDate) {
-    return 'Please provide a valid issue and expiry date'
-  } else if (issueDate > expiryDate) {
+    return 'Please provide the current immigration status'
+  } else if (!maritalStatus) {
+    return 'Please provide the marital status'
+  } else if (issueDate && expiryDate && issueDate > expiryDate) {
     return 'Issue date cannot be greater than expiry date'
   } else if (followupDate && followupDate < Date.now()) {
     return 'Follow-up date cannot be less than today'
@@ -104,10 +105,12 @@ function convertUserBodyToUserModel(userBody) {
 
   userModel.lastname = userBody.lastname.trim()
   userModel.givenNames = userBody.givenNames.trim()
+  userModel.fullname = userBody.lastname.trim() + ' ' + userBody.givenNames.trim()
   userModel.phoneNumber = userBody.phoneNumber.trim()
   userModel.alternateTelephoneNumber = userBody.alternateTelephoneNumber.trim()
   userModel.email = userBody.email.trim()
   userModel.consultationOnly = userBody.consultationOnly
+  userModel.maritalStatus = userBody.maritalStatus
   userModel.issueDate = userBody.issueDate
   userModel.expiryDate = userBody.expiryDate
   userModel.presentImmigrationStatus = userBody.presentImmigrationStatus
@@ -143,6 +146,21 @@ async function findAdmin() {
   }
 }
 
+async function findUsersToFollowupWithToday() {
+  try {
+    const currentDate = new Date()
+    currentDate.setHours(0,0,0,0)
+    return User.find({
+      followupDate: {
+        $gte: currentDate,
+        $lt: new Date(new Date().setDate(new Date().getDate() + 1)),
+      },
+    })
+  } catch (error) {
+    throw new Error(`Unable to connect to the database.`)
+  }
+}
+
 module.exports = {
   isUserNotValidForUpdate,
   isUserValidForRegistration,
@@ -151,4 +169,5 @@ module.exports = {
   findUserByPhoneNumber,
   findAdmin,
   convertUserBodyToUserModel,
+  findUsersToFollowupWithToday,
 }

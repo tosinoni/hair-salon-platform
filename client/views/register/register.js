@@ -16,7 +16,12 @@ import {
 
 import SweetAlert from 'sweetalert2-react'
 
-import { consultationOptions, immigrationStatuses } from '../../constants/constants'
+import {
+  consultationOptions,
+  maritalStatusOptions,
+  immigrationStatuses,
+  followUpReasons,
+} from '../../constants/constants'
 
 import { isNameValid, isEmailValid, isPhoneNumberValid, isStringValid, isBoolean } from '../../util'
 
@@ -44,10 +49,13 @@ function getInitialState() {
       alternateTelephoneNumber: '',
       alternateTelephoneNumberState: '',
       consultationOnly: '',
-      consultationOnlySelection: { value: '', label: '' },
+      consultationOnlySelection: null,
       consultationOnlyState: '',
+      maritalStatus: '',
+      maritalStatusSelection: null,
+      maritalStatusState: '',
       presentImmigrationStatus: '',
-      presentImmigrationStatusSelection: { value: '', label: '' },
+      presentImmigrationStatusSelection: null,
       presentImmigrationStatusState: '',
       issueDate: '',
       issueDateSelection: '',
@@ -55,6 +63,13 @@ function getInitialState() {
       expiryDate: '',
       expiryDateSelection: '',
       expiryDateState: '',
+      purposeOfFollowup: '',
+      purposeOfFollowupSelection: null,
+      purposeOfFollowupState: '',
+      followupDate: '',
+      followupDateSelection: '',
+      followupDateState: '',
+      notes: ''
     },
   }
 }
@@ -142,6 +157,18 @@ class Register extends React.Component {
     this.setState({ register })
   }
 
+  setMaritalStatusOption(maritalStatusOption) {
+    const register = this.state.register
+
+    register.maritalStatusSelection = maritalStatusOption
+    register.maritalStatus = maritalStatusOption.value
+    register.maritalStatusState = isStringValid(maritalStatusOption.value)
+      ? 'has-success'
+      : 'has-danger'
+
+    this.setState({ register })
+  }
+
   setPresentImmigrationStatus(immigrationStatus) {
     const register = this.state.register
 
@@ -160,10 +187,15 @@ class Register extends React.Component {
 
     register.issueDateSelection = moment
     register.issueDate = date
-    register.issueDateState =
-      isStringValid(date) && (date >= register.expiryDate || !register.expiryDate)
-        ? 'has-success'
-        : 'has-danger'
+
+    if (date) {
+      register.issueDateState =
+        isStringValid(date) && (date >= register.expiryDate || !register.expiryDate)
+          ? 'has-success'
+          : 'has-danger'
+    } else {
+      register.issueDateState = ''
+    }
 
     this.setState({ register })
   }
@@ -174,10 +206,55 @@ class Register extends React.Component {
 
     register.expiryDateSelection = moment
     register.expiryDate = date
-    register.expiryDateState =
-      isStringValid(date) && (date >= register.issueDate || !register.issueDate)
-        ? 'has-success'
-        : 'has-danger'
+
+    if (date) {
+      register.expiryDateState =
+        isStringValid(date) && (date >= register.issueDate || !register.issueDate)
+          ? 'has-success'
+          : 'has-danger'
+    } else {
+      register.expiryDateState = ''
+    }
+
+    this.setState({ register })
+  }
+
+  setPurposeOfFollowup(purpose) {
+    const register = this.state.register
+
+    register.purposeOfFollowupSelection = purpose
+    register.purposeOfFollowup = purpose ? purpose.value : ''
+
+    if (purpose) {
+      register.purposeOfFollowupState = isStringValid(purpose.value) ? 'has-success' : 'has-danger'
+    }
+
+    this.setState({ register })
+  }
+
+  setFollowupDate(moment) {
+    const register = this.state.register
+    const date = moment && moment.toDate ? moment.toDate() : ''
+    const currentDate = new Date()
+    currentDate.setHours(0,0,0,0);
+
+    register.followupDate = date
+    register.followupDateSelection = moment
+
+    if (date) {
+      register.followupDateState =
+        isStringValid(date) && date >= currentDate ? 'has-success' : 'has-danger'
+    } else {
+      register.followupDateState = ''
+    }
+
+    this.setState({ register })
+  }
+
+  setNotes(evt) {
+    const register = this.state.register
+
+    register.notes = evt.target.value
 
     this.setState({ register })
   }
@@ -216,18 +293,33 @@ class Register extends React.Component {
       formValid = false
     }
 
+    if (register.maritalStatusState !== 'has-success') {
+      register.maritalStatusState = 'has-danger'
+      formValid = false
+    }
+
     if (register.presentImmigrationStatusState !== 'has-success') {
       register.presentImmigrationStatusState = 'has-danger'
       formValid = false
     }
 
-    if (register.issueDateState !== 'has-success') {
+    if (register.issueDateState !== 'has-success' && register.issueDate) {
       register.issueDateState = 'has-danger'
       formValid = false
     }
 
-    if (register.expiryDateState !== 'has-success') {
+    if (register.expiryDateState !== 'has-success' && register.expiryDate) {
       register.expiryDateState = 'has-danger'
+      formValid = false
+    }
+
+    if (register.purposeOfFollowupState !== 'has-success' && register.purposeOfFollowup) {
+      register.purposeOfFollowupState = 'has-danger'
+      formValid = false
+    }
+
+    if (register.followupDateState !== 'has-success' && register.followupDate) {
+      register.followupDateState = 'has-danger'
       formValid = false
     }
 
@@ -260,11 +352,15 @@ class Register extends React.Component {
       email,
       phoneNumber,
       alternateTelephoneNumber,
+      maritalStatusSelection,
       consultationOnlySelection,
       presentImmigrationStatusSelection,
       issueDate,
       expiryDate,
+      purposeOfFollowupSelection,
+      followupDate,
       showAlert,
+      notes,
     } = this.state.register
 
     return (
@@ -337,6 +433,22 @@ class Register extends React.Component {
                       />
                     </FormGroup>
                   </Col>
+                  <Col xs={12} md={6}>
+                    <FormGroup>
+                      <label>Marital Status: * </label>
+                      <Select
+                        className={
+                          'react-select primary ' + this.state.register.maritalStatusState
+                        }
+                        classNamePrefix="react-select"
+                        name="maritalStatus"
+                        value={maritalStatusSelection}
+                        options={maritalStatusOptions}
+                        onChange={value => this.setMaritalStatusOption(value)}
+                        isSearchable
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
                 <Row>
                   <Col xs={12} md={6}>
@@ -360,7 +472,7 @@ class Register extends React.Component {
                 <Row>
                   <Col xs={12} md={6}>
                     <FormGroup className={this.state.register.issueDateState}>
-                      <label>Issue Date: * </label>
+                      <label>Issue Date:</label>
                       <Datetime
                         timeFormat={false}
                         closeOnSelect={true}
@@ -369,16 +481,61 @@ class Register extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                </Row>
-                <Row>
                   <Col xs={12} md={6}>
                     <FormGroup className={this.state.register.expiryDateState}>
-                      <label>Expiry Date: * </label>
+                      <label>Expiry Date:</label>
                       <Datetime
                         timeFormat={false}
                         closeOnSelect={true}
                         value={expiryDate}
                         onChange={date => this.setExpiryDate(date)}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12} md="6">
+                    <FormGroup>
+                      <label>Purpose Of Follow-up: </label>
+                      <Select
+                        className={
+                          'react-select primary ' + this.state.register.purposeOfFollowupState
+                        }
+                        classNamePrefix="react-select"
+                        name="purposeOfFollowup"
+                        value={purposeOfFollowupSelection}
+                        options={followUpReasons}
+                        onChange={value => this.setPurposeOfFollowup(value)}
+                        isSearchable
+                        isClearable={true}
+                        components={{
+                          IndicatorSeparator: () => null,
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs={12} md="6">
+                    <FormGroup className={this.state.register.followupDateState}>
+                      <label>Follow-up Date: </label>
+                      <Datetime
+                        timeFormat={false}
+                        closeOnSelect={true}
+                        value={followupDate}
+                        onChange={date => this.setFollowupDate(date)}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="12">
+                    <FormGroup>
+                      <label>Notes: </label>
+                      <Input
+                        cols="80"
+                        rows="4"
+                        type="textarea"
+                        value={notes}
+                        onChange={e => this.setNotes(e)}
                       />
                     </FormGroup>
                   </Col>

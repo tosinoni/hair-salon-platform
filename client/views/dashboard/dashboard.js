@@ -10,6 +10,8 @@ import Button from '../../components/customButton/customButton'
 
 import ReactTable from 'react-table'
 
+import moment from 'moment'
+
 import {
   ButtonGroup,
   Card,
@@ -78,7 +80,7 @@ class DashboardView extends React.Component {
         lastname: user.lastname,
         givenNames: user.givenNames,
         purposeOfFollowup: user.purposeOfFollowup,
-        followupDate: user.followupDate,
+        followupDate: moment(user.followupDate).format('MMMM Do YYYY'),
         actions: (
           // we've added some custom button actions
           <div className="actions-center">

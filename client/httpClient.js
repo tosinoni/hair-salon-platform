@@ -9,6 +9,9 @@ const httpClient = axios.create({
 // Add a response interceptor
 httpClient.interceptors.response.use(
   function(response) {
+    if(response.data && response.data.message == 'Invalid token.') {
+      httpClient.logOut();
+    }
     return response
   },
   function(error) {
@@ -62,6 +65,16 @@ httpClient.register = function(userInfo) {
     })
     .catch(err => {
       return err.data
+    })
+}
+
+httpClient.searchForUsers = function(query, page = 1) {
+  return this({ method: 'get', url: '/users/search?name=' + query })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err
     })
 }
 

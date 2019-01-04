@@ -217,6 +217,120 @@
           }
         }
       }
+
+      .rdt {
+        position: relative;
+
+        .form-control {
+          padding: 10px 18px;
+          color: #2c2c2c;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          background-color: transparent;
+          border: 1px solid #e3e3e3;
+          border-radius: 30px;
+          line-height: normal;
+          font-size: 0.8571em;
+          -webkit-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+          -o-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+          transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+            background-color 0.3s ease-in-out;
+        }
+
+        &.rdtOpen .rdtPicker {
+          opacity: 1;
+          visibility: visible;
+          margin-top: 0;
+          display: block;
+        }
+
+        .rdtPicker {
+          -webkit-transition: all 0.15s linear;
+          -o-transition: all 0.15s linear;
+          transition: all 0.15s linear;
+          margin-top: -20px;
+          visibility: hidden;
+          display: block;
+          opacity: 0;
+          top: 40px;
+          display: none;
+          position: absolute;
+          width: 100%;
+          padding: 4px;
+          margin-top: 1px;
+          z-index: 99999 !important;
+          background: #fff;
+          border-radius: 0.125rem;
+          -webkit-box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.2);
+          background-clip: padding-box;
+          min-width: 160px;
+
+          table {
+            width: 100%;
+            margin: 0;
+            border-color: #fff !important;
+
+            th {
+              text-align: center;
+              padding: 1px;
+
+              &.rdtPrev,
+              &.rdtNext {
+                font-size: 21px;
+                vertical-align: top;
+                border-radius: 50%;
+                line-height: 33px;
+                color: #e14eca;
+                cursor: pointer;
+
+                span {
+                  display: block;
+                }
+              }
+
+              &.rdtSwitch {
+                color: #e14eca;
+                width: 50px;
+                padding: 5px;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+            }
+
+            tr {
+              .dow {
+                text-align: center;
+                border-bottom: 1px solid #e3e3e3;
+                font-size: 12px;
+                text-transform: uppercase;
+                font-weight: inherit;
+                padding-bottom: 5px;
+                color: #e14eca;
+                padding-top: 10px;
+                width: 14.2857%;
+              }
+
+              .rdtOld,
+              .rdtNew {
+                color: #ddd;
+              }
+
+              .rdtDay {
+                height: 30px;
+                line-height: 33px;
+                width: 30px;
+                text-align: center;
+                padding: 0;
+                border-radius: 50%;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
     }
   }
 

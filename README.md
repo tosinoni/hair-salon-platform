@@ -10,7 +10,6 @@ Clone the project and create a .env file and add it to the root of the project.
 Create a mongodb database on [mlab](http://mlab.com)
 
       ADD mongodb link e.g DB_LINK=mongodb://<username>:<password>@ds021010.mlab.com:21010/<db-name>
-      Add DB host env variable on a new line -> DB_HOST=localhost 
       Add JWT_SECRET env variable on a new line -> JWT_SECRET=<anything you want> 
 
 

@@ -2,6 +2,14 @@ export const API_URL = '/api'
 export const API_USER_PATH = '/users'
 
 export const consultationOptions = [{ value: true, label: 'Yes' }, { value: false, label: 'No' }]
+export const maritalStatusOptions = [
+  { value: 'Never Married', label: 'Never Married' },
+  { value: 'Married', label: 'Married' },
+  { value: 'Common Law', label: 'Common Law' },
+  { value: 'Separated', label: 'Separated' },
+  { value: 'Divorced', label: 'Divorced' },
+  { value: 'Widowed', label: 'Widowed' },
+]
 export const immigrationStatuses = [
   { value: 'Visitor', label: 'Visitor' },
   { value: 'Student permit', label: 'Student permit' },

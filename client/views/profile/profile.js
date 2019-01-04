@@ -24,6 +24,7 @@ import {
 } from '../../util'
 
 import {
+  maritalStatusOptions,
   consultationOptions,
   immigrationStatuses,
   followUpReasons,
@@ -63,6 +64,7 @@ class Admin extends React.Component {
       user.consultationOnly,
       consultationOptions,
     )
+    user.maritalStatusSelection = getSelectionFromOptions(user.maritalStatus, maritalStatusOptions)
     user.presentImmigrationStatusSelection = getSelectionFromOptions(
       user.presentImmigrationStatus,
       immigrationStatuses,
@@ -79,7 +81,7 @@ class Admin extends React.Component {
     return user
   }
 
-  componentDidMount() {
+  setProfile() {
     const state = this.props && this.props.location ? this.props.location.state : ''
     const userId = state ? state.id : ''
 
@@ -93,6 +95,18 @@ class Admin extends React.Component {
       })
     } else {
       this.goBackToDashBoard()
+    }
+  }
+  componentDidMount() {
+    this.setProfile()
+  }
+
+  componentDidUpdate() {
+    const state = this.props && this.props.location ? this.props.location.state : ''
+    const userId = state ? state.id : ''
+
+    if (userId && this.state.user && userId !== this.state.user._id) {
+      this.setProfile()
     }
   }
 
@@ -159,6 +173,18 @@ class Admin extends React.Component {
     this.setState({ user })
   }
 
+  setMaritalStatusOption(maritalStatusOption) {
+    const user = this.state.user
+
+    user.maritalStatusSelection = maritalStatusOption
+    user.maritalStatus = maritalStatusOption.value
+    user.maritalStatusState = isStringValid(maritalStatusOption.value)
+      ? 'has-success'
+      : 'has-danger'
+
+    this.setState({ user })
+  }
+
   setPresentImmigrationStatus(immigrationStatus) {
     const user = this.state.user
 
@@ -177,10 +203,15 @@ class Admin extends React.Component {
 
     user.issueDateSelection = moment
     user.issueDate = date
-    user.issueDateState =
-      isStringValid(date) && (date >= user.expiryDate || !user.expiryDate)
-        ? 'has-success'
-        : 'has-danger'
+
+    if (date) {
+      user.issueDateState =
+        isStringValid(date) && (date >= user.expiryDate || !user.expiryDate)
+          ? 'has-success'
+          : 'has-danger'
+    } else {
+      user.issueDateState = ''
+    }
 
     this.setState({ user })
   }
@@ -191,10 +222,15 @@ class Admin extends React.Component {
 
     user.expiryDateSelection = moment
     user.expiryDate = date
-    user.expiryDateState =
-      isStringValid(date) && (date >= user.issueDate || !user.issueDate)
-        ? 'has-success'
-        : 'has-danger'
+
+    if (date) {
+      user.expiryDateState =
+        isStringValid(date) && (date >= user.issueDate || !user.issueDate)
+          ? 'has-success'
+          : 'has-danger'
+    } else {
+      user.expiryDateState = ''
+    }
 
     this.setState({ user })
   }
@@ -215,10 +251,14 @@ class Admin extends React.Component {
   setFollowupDate(moment) {
     const user = this.state.user
     const date = moment && moment.toDate ? moment.toDate() : ''
-    const currentDate = Date.now()
+    const currentDate = new Date()
+    currentDate.setHours(0,0,0,0);
 
     user.followupDate = date
     user.followupDateSelection = moment
+
+    console.log(currentDate)
+    console.log(date)
 
     if (date) {
       user.followupDateState =
@@ -248,7 +288,7 @@ class Admin extends React.Component {
       user.phoneNumberState !== 'has-danger' &&
       user.alternateTelephoneNumberState !== 'has-danger' &&
       user.consultationOnlyState !== 'has-danger' &&
-      user.consultationOnlyState !== 'has-danger' &&
+      user.maritalStatusState !== 'has-danger' &&
       user.presentImmigrationStatusState !== 'has-danger' &&
       user.issueDateState !== 'has-danger' &&
       user.expiryDateState !== 'has-danger' &&
@@ -266,7 +306,7 @@ class Admin extends React.Component {
     user.phoneNumberState = ''
     user.alternateTelephoneNumberState = ''
     user.consultationOnlyState = ''
-    user.consultationOnlyState = ''
+    user.maritalStatusState = ''
     user.presentImmigrationStatusState = ''
     user.issueDateState = ''
     user.expiryDateState = ''
@@ -383,6 +423,23 @@ class Admin extends React.Component {
                         />
                       </FormGroup>
                     </Col>
+                    <Col className="pl-md-1" xs={12} md={6}>
+                      <FormGroup>
+                        <label>Marital Status: * </label>
+                        <Select
+                          className={'react-select primary ' + user.maritalStatusState}
+                          classNamePrefix="react-select"
+                          name="maritalStatus"
+                          value={user.maritalStatusSelection}
+                          options={maritalStatusOptions}
+                          onChange={value => this.setMaritalStatusOption(value)}
+                          isSearchable
+                          components={{
+                            IndicatorSeparator: () => null,
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
                   </Row>
                   <Row>
                     <Col className="pr-md-1" xs={12} md={6}>
@@ -406,7 +463,7 @@ class Admin extends React.Component {
                   <Row>
                     <Col className="pr-md-1" md="6">
                       <FormGroup className={user.issueDateState}>
-                        <label>Issue Date: * </label>
+                        <label>Issue Date:</label>
                         <Datetime
                           timeFormat={false}
                           closeOnSelect={true}
@@ -417,7 +474,7 @@ class Admin extends React.Component {
                     </Col>
                     <Col className="pl-md-1" md="6">
                       <FormGroup className={user.expiryDateState}>
-                        <label>Expiry Date: * </label>
+                        <label>Expiry Date:</label>
                         <Datetime
                           timeFormat={false}
                           closeOnSelect={true}
@@ -434,7 +491,7 @@ class Admin extends React.Component {
                         <Select
                           className={'react-select primary ' + user.purposeOfFollowupState}
                           classNamePrefix="react-select"
-                          name="immigrationStatus"
+                          name="purposeOfFollowUp"
                           value={user.purposeOfFollowupSelection}
                           options={followUpReasons}
                           onChange={value => this.setPurposeOfFollowup(value)}

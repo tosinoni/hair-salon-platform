@@ -68,6 +68,10 @@
         color: #9a9a9a !important;
       }
 
+      textarea.form-control {
+        border-radius: 0.25rem;
+      }
+
       .form-control {
         padding: 10px 18px;
         background-color: transparent;

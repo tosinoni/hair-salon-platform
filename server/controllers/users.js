@@ -10,13 +10,35 @@ exports.getAllUsers = function(req, res) {
   })
 }
 
+exports.searchForUsers = function(req, res) {
+  const { name } = req.query
+  const regex = new RegExp('.*' + name + '.*', 'i')
+
+  User.find(
+    {
+      $or: [
+        { lastname: { $regex: regex } },
+        { givenNames: { $regex: regex } },
+        { fullname: { $regex: regex } },
+      ],
+    },
+    (err, data) => {
+      return res.status(200).send({ success: true, data: data && data.length > 0 ? data : [] })
+    },
+  )
+}
+
 //all users to follow up three months from now
 exports.getAllUsersToFollowUp = function(req, res) {
   let cutoff = new Date()
-
+  cutoff.setHours(0,0,0,0)
   cutoff.setDate(cutoff.getDate() + 90)
 
-  User.find({ followupDate: { $gt: new Date(), $lt: cutoff } })
+  let currentDate = new Date()
+  currentDate.setHours(0,0,0,0)
+
+
+  User.find({ followupDate: { $gte: currentDate, $lt: cutoff } })
     .sort('followupDate')
     .exec((err, data) => {
       if (err)
@@ -87,15 +109,12 @@ exports.login = function(req, res) {
   // check if the user exists
   User.findOne({ username: username }, (err, user) => {
     // if there's no user or the password is invalid
-    console.log(req.body)
     if (!user || !user.validPassword(password)) {
       // deny access
-      return res
-        .status(400)
-        .send({
-          success: false,
-          error: 'Login failed. Please provide a valid username and password',
-        })
+      return res.status(400).send({
+        success: false,
+        error: 'Login failed. Please provide a valid username and password',
+      })
     }
 
     const token = signToken(user)
