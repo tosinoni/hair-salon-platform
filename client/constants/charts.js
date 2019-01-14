@@ -48,7 +48,6 @@ let chart1_2_options = {
 
 let chartExample1 = {
   data1: canvas => {
-    console.log(canvas)
     let ctx = canvas.getContext('2d')
 
     let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
