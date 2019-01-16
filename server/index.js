@@ -10,6 +10,7 @@ const path = require('path')
 const serveStatic = require('serve-static')
 const emailService = require('./email-service/email-service.js')
 const schedule = require('node-schedule')
+const CronJob = require('cron').CronJob
 
 dotenv.config()
 
@@ -59,6 +60,13 @@ app.get('*', function(req, res) {
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
 
 userController.createAdmin()
-schedule.scheduleJob({hour: 19}, () => {
+// schedule.scheduleJob({hour: 19}, () => {
+//   emailService.sendDailyEmail()
+// })
+
+const job = new CronJob('0 */10 * * * *', function() {
+  console.log('sending email every 10 minutes');
   emailService.sendDailyEmail()
 })
+console.log('After job instantiation')
+job.start()
