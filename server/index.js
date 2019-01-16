@@ -61,7 +61,7 @@ app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
 
 userController.createAdmin()
 
-const job = new CronJob('0 11 * * *', function() {
+const job = new CronJob('0 12 * * *', function() {
   emailService.sendDailyEmail()
 })
 job.start()
