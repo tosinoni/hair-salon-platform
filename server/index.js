@@ -63,7 +63,7 @@ userController.createAdmin()
 
 console.log(new Date())
 
-const job = new CronJob('0 14 * * *', function() {
+const job = new CronJob('0 */10 * * * *', function() {
   console.log('sending email...')
   emailService.sendDailyEmail()
 })
