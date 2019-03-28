@@ -3,6 +3,7 @@ import Users from './views/users/users'
 import Register from './views/register/register'
 import Profile from './views/profile/profile'
 import ChangePassword from './views/change-password/change-password'
+import ManageAccount from './views/manage-account/manage-account'
 
 var routes = [
   {
@@ -39,6 +40,14 @@ var routes = [
     icon: 'user-secret',
     isSideBar: true,
     component: ChangePassword,
+  },
+  {
+    path: '/account',
+    name: 'Manage account',
+    icon: 'calculator',
+    isSideBar: true,
+    isAdmin: true,
+    component: ManageAccount,
   },
   { redirect: true, path: '/', pathTo: '/dashboard', name: 'Dashboard' },
 ]

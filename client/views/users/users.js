@@ -40,9 +40,7 @@ class Users extends React.Component {
   }
 
   deleteUser(userObj) {
-    console.log('delete user: ', userObj)
     httpClient.deleteUser(userObj.userId).then(res => {
-      console.log(res)
       if (res.success) {
         var data = this.state.data
         data.find((o, i) => {
