@@ -10,6 +10,10 @@ exports.getAllUsers = function(req, res) {
   })
 }
 
+exports.getCurrentUser = function(req, res) {
+  return res.status(200).send({ success: true, data: req.user })
+}
+
 exports.searchForUsers = function(req, res) {
   const { name } = req.query
   const regex = new RegExp('.*' + name + '.*', 'i')

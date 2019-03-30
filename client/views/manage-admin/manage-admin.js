@@ -1,13 +1,16 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import ReactTable from 'react-table'
 import FontAwesome from 'react-fontawesome'
 
-import './manage-account.scss'
+import './manage-admin.scss'
 import httpClient from '../../httpClient'
 
 import AsyncSelect from 'react-select/lib/Async'
-import { isArrayEmpty, isStringValid } from '../../util'
+import { isArrayEmpty, isStringValid, isNameValid } from '../../util'
 import Swal from 'sweetalert2'
+import Select from 'react-select'
+
+import { adminOptions } from '../../constants/constants'
 
 import {
   Button,
@@ -35,10 +38,10 @@ function getInitialState(toggle) {
       footerActionTitle: '',
       userSelectionState: '',
       userSelection: '',
-      monthsOwingState: '',
-      monthsOwing: '',
-      amountOwingState: '',
-      amountOwing: '',
+      rolSelectionState: '',
+      roleSelection: '',
+      password: '',
+      confirmPassword: '',
       userSelectionDisabled: false,
       entryId: '',
     },
@@ -58,11 +61,10 @@ class ManageAccount extends React.Component {
     this.toggleModal = this.toggleModal.bind(this)
     this.searchForUsers = this.searchForUsers.bind(this)
     this.submitEntry = this.submitEntry.bind(this)
-    this.setEntryFieldState = this.setEntryFieldState.bind(this)
-    this.editEntryClicked = this.editEntryClicked.bind(this)
-    this.deleteEntry = this.deleteEntry.bind(this)
+    this.editAdminClicked = this.editAdminClicked.bind(this)
+    this.deleteAdmin = this.deleteAdmin.bind(this)
 
-    this.getAllEntries()
+    this.getAllAdmins()
   }
 
   addNewEntry(evt) {
@@ -73,36 +75,35 @@ class ManageAccount extends React.Component {
     this.setState({ modal })
   }
 
-  getAllEntries() {
-    httpClient.getAllAccountEntries().then(entriesResponse => {
-      if (entriesResponse && entriesResponse.success && !isArrayEmpty(entriesResponse.data)) {
-        console.log(entriesResponse.data)
-        const data = this.getEntriesDataForTable(entriesResponse.data)
+  getAllAdmins() {
+    httpClient.getAllAdmins().then(admins => {
+      if (admins && admins.success && !isArrayEmpty(admins.data)) {
+        console.log(admins.data)
+        const data = this.getAdminsDataForTable(admins.data)
         this.setState({ data: data })
       }
     })
   }
 
-  editEntryClicked(entry) {
+  editAdminClicked(admin) {
     const modal = this.state.modal
 
     modal.toggle = true
     modal.userSelection = {
-      value: entry.userId,
-      label: entry.fullname,
-      _id: entry.userId,
+      value: admin.userId,
+      label: admin.fullname,
+      _id: admin.userId,
     }
     modal.userSelectionDisabled = true
-    modal.monthsOwing = entry.monthsOwing
-    modal.amountOwing = entry.amountOwing
+    modal.role = admin.role
+
     modal.isEdit = true
-    modal.entryId = entry.entryId
 
     this.setState({ modal })
   }
 
-  deleteEntry(entry) {
-    httpClient.deleteAccountEntry(entry.entryId).then(res => {
+  deleteAdmin(admin) {
+    httpClient.deleteAdmin(admin.userId).then(res => {
       if (res.success) {
         var data = this.state.data
         data.find((o, i) => {
@@ -113,23 +114,20 @@ class ManageAccount extends React.Component {
           return false
         })
         this.setState({ data: data })
-        Swal('Deleted', 'Entry deleted successfully', 'success')
+        Swal('Deleted', 'User is no more an admin.', 'success')
       } else {
         Swal('Oops', res.error, 'error')
       }
     })
   }
 
-  getEntriesDataForTable(entries) {
-    return entries.map((entry, key) => {
+  getAdminsDataForTable(admins) {
+    return admins.map((admin, key) => {
       return {
         id: key,
-        entryId: entry._id,
-        userId: entry.userId,
-        fullname: entry.fullname,
-        amountOwing: entry.amountOwing,
-        presentImmigrationStatus: entry.presentImmigrationStatus,
-        monthsOwing: entry.monthsOwing,
+        userId: admin._id,
+        fullname: admin.fullname ? admin.fullname : admin.username,
+        role: admin.role,
         actions: (
           // we've added some custom button actions
           <div className="actions-center">
@@ -137,7 +135,7 @@ class ManageAccount extends React.Component {
             <Button
               onClick={() => {
                 const obj = this.state.data.find(o => o.id === key)
-                this.editEntryClicked(obj)
+                this.editAdminClicked(obj)
               }}
               color="info"
               size="sm"
@@ -160,7 +158,7 @@ class ManageAccount extends React.Component {
                   cancelButtonText: 'Cancel',
                 }).then(result => {
                   if (result.value) {
-                    this.deleteEntry(obj)
+                    this.deleteAdmin(obj)
                   }
                 })
               }}
@@ -189,26 +187,51 @@ class ManageAccount extends React.Component {
     const modal = this.state.modal
 
     modal.userSelection = user
-    modal.userSelectionState = isStringValid(modal.value) ? 'has-success' : 'has-danger'
+    modal.userSelectionState = isStringValid(user.value) ? 'has-success' : 'has-danger'
 
     this.setState({ modal })
   }
 
-  setEntryFieldState(input, fieldName, stateName) {
+  setUserName(evt) {
+    const input = evt.target.value
     const modal = this.state.modal
-    modal[fieldName] = input
 
-    modal[stateName] = input ? 'has-success' : 'has-danger'
+    modal.username = input
+    modal.usernameState = isNameValid(input) ? 'has-success' : 'has-danger'
 
     this.setState({ modal })
   }
 
-  setMonthsOwing(evt) {
-    this.setEntryFieldState(evt.target.value, 'monthsOwing', 'monthsOwingState')
+  setRole(role) {
+    const modal = this.state.modal
+
+    modal.roleSelection = role
+    modal.rolSelectionState = isStringValid(role.value) ? 'has-success' : 'has-danger'
+
+    this.setState({ modal })
   }
 
-  setAmountOwing(evt) {
-    this.setEntryFieldState(evt.target.value, 'amountOwing', 'amountOwingState')
+  setPassword(evt) {
+    const input = evt.target.value
+    const modal = this.state.modal
+
+    modal.password = input
+    modal.passwordState = input ? 'has-success' : 'has-danger'
+    modal.confirmPasswordState =
+      modal.password === modal.confirmPassword ? 'has-success' : 'has-danger'
+
+    this.setState({ modal })
+  }
+
+  setConfirmPassword(evt) {
+    const input = evt.target.value
+    const modal = this.state.modal
+
+    modal.confirmPassword = input
+    modal.confirmPasswordState =
+      modal.password === modal.confirmPassword ? 'has-success' : 'has-danger'
+
+    this.setState({ modal })
   }
 
   getUsersDataForSelect(users) {
@@ -230,18 +253,34 @@ class ManageAccount extends React.Component {
     let modal = this.state.modal
     let formValid = true
 
-    if ((!modal.isEdit && modal.userSelectionState !== 'has-success') || (modal.isEdit && !modal.userSelection)) {
+    if (
+      (!modal.isEdit && modal.userSelectionState !== 'has-success') ||
+      (modal.isEdit && !modal.userSelection)
+    ) {
       modal.userSelectionState = 'has-danger'
       formValid = false
     }
 
-    if ((!modal.isEdit && modal.monthsOwingState !== 'has-success') || (modal.isEdit && !modal.monthsOwing)) {
-      modal.monthsOwingState = 'has-danger'
+    if (
+      (!modal.isEdit && modal.rolSelectionState !== 'has-success') ||
+      (modal.isEdit && !modal.roleSelection)
+    ) {
+      modal.rolSelectionState = 'has-danger'
       formValid = false
     }
 
-    if ((!modal.isEdit &&  modal.amountOwingState !== 'has-success') || (modal.isEdit && !modal.amountOwing)) {
-      modal.amountOwingState = 'has-danger'
+    if (!modal.isEdit && modal.usernameState !== 'has-success') {
+      modal.usernameState = 'has-danger'
+      formValid = false
+    }
+
+    if (!modal.isEdit && modal.passwordState !== 'has-success') {
+      modal.passwordState = 'has-danger'
+      formValid = false
+    }
+
+    if (!modal.isEdit && modal.confirmPasswordState !== 'has-success') {
+      modal.confirmPasswordState = 'has-danger'
       formValid = false
     }
 
@@ -249,10 +288,10 @@ class ManageAccount extends React.Component {
     return formValid
   }
 
-  submitPromise(entryObj) {
+  submitPromise(adminObj) {
     return this.state.modal.isEdit
-      ? httpClient.updateAccountEntry(entryObj)
-      : httpClient.addAccountEntry(entryObj)
+      ? httpClient.updateAdmin(adminObj)
+      : httpClient.addAdmin(adminObj)
   }
 
   submitEntry(evt) {
@@ -261,21 +300,23 @@ class ManageAccount extends React.Component {
     if (this.isModalValid()) {
       const modal = this.state.modal
 
-      const entryObj = {
-        _id: modal.entryId,
+      const adminObj = {
         userId: modal.userSelection._id,
-        monthsOwing: modal.monthsOwing,
-        amountOwing: modal.amountOwing,
+        role: modal.roleSelection.value,
+        username: modal.username ? modal.username : '',
+        password: modal.password ? modal.password : '',
       }
 
+      console.log(adminObj)
+
       const _this = this
-      this.submitPromise(entryObj).then(function(res) {
+      this.submitPromise(adminObj).then(function(res) {
         if (res.success) {
-          _this.getAllEntries()
+          _this.getAllAdmins()
           _this.toggleModal()
-          Swal('Yaah', 'Account entry created', 'success')
+          Swal('Yaah', 'Admin created', 'success')
         } else {
-          Swal('Account entry not created!!!', res.error, 'error')
+          Swal('Operation failed!!!', res.error, 'error')
         }
       })
     }
@@ -283,7 +324,7 @@ class ManageAccount extends React.Component {
 
   render() {
     const { modal } = this.state
-    const headerTitle = modal.isEdit ? 'Edit Entry' : 'Add new entry'
+    const headerTitle = modal.isEdit ? 'Edit Admin' : 'Add new admin'
 
     return (
       <div className="content">
@@ -291,9 +332,9 @@ class ManageAccount extends React.Component {
           <Col md="12">
             <Card className="manage-account">
               <CardHeader>
-                <CardTitle tag="h4">Manage Account</CardTitle>
+                <CardTitle tag="h4">Manage Admins</CardTitle>
                 <Button color="primary" type="submit" onClick={this.toggleModal}>
-                  Add New Entry
+                  Add New Admin
                 </Button>
                 <Modal isOpen={this.state.modal.toggle} toggle={this.toggleModal}>
                   <ModalHeader toggle={this.toggle}>{headerTitle}</ModalHeader>
@@ -319,28 +360,65 @@ class ManageAccount extends React.Component {
                     </Row>
                     <Row>
                       <Col className="pr-md-1" md="8">
-                        <FormGroup className={'has-label ' + modal.monthsOwingState}>
-                          <label>Number of months: </label>
-                          <Input
-                            type="number"
-                            value={modal.monthsOwing}
-                            onChange={e => this.setMonthsOwing(e)}
+                        <FormGroup>
+                          <label>Role: * </label>
+                          <Select
+                            className={'react-select primary ' + modal.rolSelectionState}
+                            classNamePrefix="react-select"
+                            name="role"
+                            value={modal.roleSelection}
+                            options={adminOptions}
+                            onChange={value => this.setRole(value)}
+                            isSearchable
+                            components={{
+                              IndicatorSeparator: () => null,
+                            }}
                           />
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
-                      <Col className="pr-md-1" md="8">
-                        <FormGroup className={'has-label ' + modal.amountOwingState}>
-                          <label>Amount Owing: * </label>
-                          <Input
-                            type="number"
-                            value={modal.amountOwing}
-                            onChange={e => this.setAmountOwing(e)}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                    {!modal.isEdit ? (
+                      <Fragment>
+                        <Row>
+                          <Col className="pr-md-1" md="8">
+                            <FormGroup className={'has-label ' + modal.usernameState}>
+                              <label>Username: * </label>
+                              <Input
+                                type="text"
+                                value={modal.username}
+                                onChange={e => this.setUserName(e)}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="pr-md-1" md="8">
+                            <FormGroup className={'has-label ' + modal.passwordState}>
+                              <label>Password: * </label>
+                              <Input
+                                type="password"
+                                value={modal.password}
+                                onChange={e => this.setPassword(e)}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="pr-md-1" md="8">
+                            <FormGroup className={'has-label ' + modal.confirmPasswordState}>
+                              <label>Confirm Password: * </label>
+                              <Input
+                                type="password"
+                                value={modal.confirmPassword}
+                                onChange={e => this.setConfirmPassword(e)}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </Fragment>
+                    ) : (
+                      ''
+                    )}
                   </ModalBody>
                   <ModalFooter>
                     <Button color="secondary" onClick={this.toggleModal}>
@@ -366,18 +444,8 @@ class ManageAccount extends React.Component {
                       className: 'actions-center',
                     },
                     {
-                      Header: 'Immigration Status',
-                      accessor: 'presentImmigrationStatus',
-                      className: 'actions-center',
-                    },
-                    {
-                      Header: 'Months Owing',
-                      accessor: 'monthsOwing',
-                      className: 'actions-center',
-                    },
-                    {
-                      Header: 'Amount',
-                      accessor: 'amountOwing',
+                      Header: 'Role',
+                      accessor: 'role',
                       className: 'actions-center',
                     },
                     {

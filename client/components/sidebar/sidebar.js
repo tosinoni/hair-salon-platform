@@ -35,7 +35,9 @@ class Sidebar extends React.Component {
     }
   }
   render() {
-    const { bgColor, routes, logo } = this.props
+    const { bgColor, routes, logo, isExecutive } = this.props
+
+    console.log(isExecutive)
     let logoImg = null
     let logoText = null
     if (logo !== undefined) {

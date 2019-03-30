@@ -24,6 +24,7 @@ const User = new Schema(
     password: String,
     avatar: String,
     isAdmin: Boolean,
+    role: String,
   },
   { timestamps: { createdAt: 'created_at' } },
 )

@@ -68,6 +68,57 @@ httpClient.register = function(userInfo) {
     })
 }
 
+httpClient.addAdmin = function(adminObj) {
+  return this({ method: 'post', url: '/admin', data: adminObj })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+httpClient.getLoggedInUser = function() {
+  return httpClient({ method: 'get', url: '/users/currentUser' })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err
+    })
+}
+
+httpClient.getAllAdmins = function() {
+  return httpClient({ method: 'get', url: '/admin' })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err
+    })
+}
+
+httpClient.updateAdmin = function(adminObj) {
+  return this({ method: 'put', url: '/admin/' + adminObj.userId, data: adminObj })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+httpClient.deleteAdmin = function(adminId) {
+  return this({ method: 'delete', url: '/admin/' + adminId })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+
 httpClient.addAccountEntry = function(entryObj) {
   return this({ method: 'post', url: '/account', data: entryObj })
     .then(res => {

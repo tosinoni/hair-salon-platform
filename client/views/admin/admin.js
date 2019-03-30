@@ -5,10 +5,12 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 
 import Sidebar from '../../components/sidebar/sidebar'
 import Header from '../../components/header/header'
+import httpClient from '../../httpClient'
 
 import routes from '../../routes'
 import logoImage from '../../assets/logoSmall.png'
 import './admin.scss'
+import { getCurrentUser } from '../../../server/controllers/users';
 
 var perfectScrollbar
 
@@ -17,11 +19,19 @@ class Admin extends React.Component {
     super(props)
     this.state = {
       backgroundColor: 'black',
+      isExecutive: false,
       sidebarOpened: document.documentElement.className.indexOf('nav-open') !== -1,
     }
 
     this.toggleSidebar = this.toggleSidebar.bind(this)
     this.handleBgClick = this.handleBgClick.bind(this)
+
+    httpClient.getLoggedInUser().then(user => {
+      if (user && user.success && user.data) {
+        const isExecutive = user.data.role === "EXECUTIVE"
+        this.setState({ isExecutive: isExecutive })
+      }
+    })
   }
 
   componentDidMount() {
@@ -90,6 +100,7 @@ class Admin extends React.Component {
         <Sidebar
           {...this.props}
           routes={routes}
+          isExecutive={this.state.isExecutive}
           bgColor={this.state.backgroundColor}
           logo={{
             outterLink: '' + this.props.location.pathname,
