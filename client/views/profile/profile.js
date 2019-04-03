@@ -256,10 +256,7 @@ class Admin extends React.Component {
 
     user.followupDate = date
     user.followupDateSelection = moment
-
-    console.log(currentDate)
-    console.log(date)
-
+    
     if (date) {
       user.followupDateState =
         isStringValid(date) && date >= currentDate ? 'has-success' : 'has-danger'

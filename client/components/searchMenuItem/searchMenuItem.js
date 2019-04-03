@@ -12,9 +12,7 @@ const SearchMenuItem = props => {
   }
 
   const handleKeyPress = (event) => {
-    console.log(event.key)
     if (event.key == 'Enter') {
-      console.log('enter press here! ')
       userClicked()
     }
   }

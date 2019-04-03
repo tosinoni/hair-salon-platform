@@ -2,6 +2,8 @@ import React from 'react'
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
 import { Route, Switch, Redirect } from 'react-router-dom'
+import { EXECUTIVE } from '../../constants/constants'
+
 
 import Sidebar from '../../components/sidebar/sidebar'
 import Header from '../../components/header/header'
@@ -10,7 +12,6 @@ import httpClient from '../../httpClient'
 import routes from '../../routes'
 import logoImage from '../../assets/logoSmall.png'
 import './admin.scss'
-import { getCurrentUser } from '../../../server/controllers/users';
 
 var perfectScrollbar
 
@@ -21,6 +22,7 @@ class Admin extends React.Component {
       backgroundColor: 'black',
       isExecutive: false,
       sidebarOpened: document.documentElement.className.indexOf('nav-open') !== -1,
+      appRoutes: [],
     }
 
     this.toggleSidebar = this.toggleSidebar.bind(this)
@@ -28,9 +30,11 @@ class Admin extends React.Component {
 
     httpClient.getLoggedInUser().then(user => {
       if (user && user.success && user.data) {
-        const isExecutive = user.data.role === "EXECUTIVE"
+        const isExecutive = user.data.role === EXECUTIVE
         this.setState({ isExecutive: isExecutive })
       }
+
+      this.getRoutes(routes)
     })
   }
 
@@ -73,12 +77,18 @@ class Admin extends React.Component {
   }
 
   getRoutes(routes) {
-    return routes.map((prop, key) => {
+    const appRoutes =  routes.map((prop, key) => {
+      if(prop.isAdmin && !this.state.isExecutive) {
+        return
+      }
+
       if (prop.redirect) {
         return <Redirect from={prop.path} to={prop.pathTo} key={key} />
       }
       return <Route path={prop.path} component={prop.component} key={key} />
     })
+
+    this.setState({ appRoutes: appRoutes })
   }
 
   handleBgClick(color) {
@@ -116,7 +126,7 @@ class Admin extends React.Component {
             toggleSidebar={this.toggleSidebar}
             sidebarOpened={this.state.sidebarOpened}
           />
-          <Switch>{this.getRoutes(routes)}</Switch>
+          <Switch>{this.state.appRoutes}</Switch>
         </div>
       </div>
     )

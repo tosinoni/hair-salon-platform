@@ -11,7 +11,6 @@ export class Tasks extends Component {
 
   handleCheckbox() {
     const target = event.target
-    console.log(event.target)
     this.setState({
       [target.name]: target.checked,
     })

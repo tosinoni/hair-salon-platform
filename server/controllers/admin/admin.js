@@ -20,7 +20,7 @@ exports.createAdmin = async function(req, res) {
 }
 
 exports.getAllAdmins = function(req, res) {
-  User.find({ isAdmin: true }, (err, data) => {
+  User.find({ isAdmin: true,  _id: { $nin: [req.user._id] } }, (err, data) => {
     if (err) return res.status(204).send({ success: false, error: 'could not get all admins' })
     return res.status(200).send({ success: true, data: data })
   })
@@ -47,7 +47,7 @@ exports.updateAdmin = async function(req, res) {
 exports.deleteAdminById = async function(req, res) {
   const { id } = req.params
 
-  const admin = await AdminService.convertAdminBodyToAdminModel(req.body)
+  let admin = await User.findById(id)
   admin.isAdmin = false;
 
   User.updateOne({ _id: admin._id }, admin, (err, user) => {

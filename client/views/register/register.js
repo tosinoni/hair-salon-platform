@@ -331,7 +331,6 @@ class Register extends React.Component {
     evt.preventDefault()
 
     if (this.isRegisterFormValid()) {
-      console.log(this.state.register)
       httpClient.register(this.state.register).then(res => {
         if (res.success) {
           Swal('Yaah', 'User registered successfully', 'success')

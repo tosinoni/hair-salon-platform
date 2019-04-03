@@ -65,7 +65,6 @@ class Login extends React.Component {
 
   onFormSubmit(evt) {
     evt.preventDefault()
-    console.log('here')
     let fields = this.state.fields
     let formValid = true
 

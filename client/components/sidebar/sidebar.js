@@ -37,7 +37,6 @@ class Sidebar extends React.Component {
   render() {
     const { bgColor, routes, logo, isExecutive } = this.props
 
-    console.log(isExecutive)
     let logoImg = null
     let logoText = null
     if (logo !== undefined) {
@@ -102,7 +101,7 @@ class Sidebar extends React.Component {
           </div>
           <Nav>
             {routes.map((prop, key) => {
-              if (prop.redirect || !prop.isSideBar) return null
+              if (prop.redirect || !prop.isSideBar || (prop.isSideBar && prop.isAdmin && !this.props.isExecutive)) return null
               return (
                 <li className={this.activeRoute(prop.path)} key={key}>
                   <Link

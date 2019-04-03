@@ -48,8 +48,6 @@ async function isNewEntryValid(entry) {
 
   var entryWithUserId = await Account.findOne({ userId: entry.userId })
 
-  console.log(entryWithUserId)
-
   return entryWithUserId ? 'Entry for user already exists' : ''
 }
 

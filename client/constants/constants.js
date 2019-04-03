@@ -1,8 +1,10 @@
 export const API_URL = '/api'
 export const API_USER_PATH = '/users'
+export const EXECUTIVE = 'Executive'
+export const ADMIN = 'Admin'
 
 export const consultationOptions = [{ value: true, label: 'Yes' }, { value: false, label: 'No' }]
-export const adminOptions = [{ value: 'Admin', label: 'Admin' }, { value: 'Executive', label: 'Executive' }]
+export const adminOptions = [{ value: ADMIN, label: ADMIN }, { value: EXECUTIVE, label: EXECUTIVE }]
 export const maritalStatusOptions = [
   { value: 'Never Married', label: 'Never Married' },
   { value: 'Married', label: 'Married' },

@@ -45,7 +45,7 @@ async function convertAdminBodyToAdminModel(adminBody) {
   let adminModel = await User.findById(adminBody.userId)
 
   if (adminBody.password) {
-    adminModel.password = adminBody.password
+    adminModel.password = adminModel.generateHash(adminBody.password);
   }
 
   if (adminBody.username) {

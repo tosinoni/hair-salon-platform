@@ -25,6 +25,7 @@ exports.searchForUsers = function(req, res) {
         { givenNames: { $regex: regex } },
         { fullname: { $regex: regex } },
       ],
+      _id: { $nin: [req.user._id] }
     },
     (err, data) => {
       return res.status(200).send({ success: true, data: data && data.length > 0 ? data : [] })
@@ -139,6 +140,7 @@ exports.login = function(req, res) {
   // check if the user exists
   User.findOne({ username: username }, (err, user) => {
     // if there's no user or the password is invalid
+    console.log(user)
     if (!user || !user.validPassword(password)) {
       // deny access
       return res.status(400).send({
@@ -179,6 +181,7 @@ exports.createAdmin = function() {
     username: 'admin',
     password: 'Admin123',
     isAdmin: true,
+    role: 'Executive',
     _id: new mongoose.Types.ObjectId(),
   }
 
@@ -187,6 +190,11 @@ exports.createAdmin = function() {
     if (!userFound) {
       User.create(user, (err, userCreated) => {
         if (err) console.log('could not create admin')
+      })
+    } else {
+      userFound.role = 'Executive';
+      User.updateOne({ _id: userFound._id }, userFound, (err, user) => {
+        if (err) console.log('could not make admin executive')
       })
     }
   })

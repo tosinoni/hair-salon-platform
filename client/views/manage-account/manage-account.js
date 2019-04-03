@@ -76,7 +76,6 @@ class ManageAccount extends React.Component {
   getAllEntries() {
     httpClient.getAllAccountEntries().then(entriesResponse => {
       if (entriesResponse && entriesResponse.success && !isArrayEmpty(entriesResponse.data)) {
-        console.log(entriesResponse.data)
         const data = this.getEntriesDataForTable(entriesResponse.data)
         this.setState({ data: data })
       }

@@ -100,7 +100,6 @@ class ChangePassword extends React.Component {
     evt.preventDefault()
 
     if (this.isChangePasswordFormValid()) {
-      console.log(this.state.fields)
       httpClient.changePassword(this.state.fields).then(res => {
         if (res.success) {
           Swal('Yaah', 'Password changed successful', 'success')

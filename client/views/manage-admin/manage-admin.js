@@ -78,7 +78,6 @@ class ManageAccount extends React.Component {
   getAllAdmins() {
     httpClient.getAllAdmins().then(admins => {
       if (admins && admins.success && !isArrayEmpty(admins.data)) {
-        console.log(admins.data)
         const data = this.getAdminsDataForTable(admins.data)
         this.setState({ data: data })
       }
@@ -96,6 +95,10 @@ class ManageAccount extends React.Component {
     }
     modal.userSelectionDisabled = true
     modal.role = admin.role
+    modal.roleSelection = {
+      value: admin.role,
+      label: admin.role,
+    }
 
     modal.isEdit = true
 
@@ -107,7 +110,7 @@ class ManageAccount extends React.Component {
       if (res.success) {
         var data = this.state.data
         data.find((o, i) => {
-          if (o.id === entry.id) {
+          if (o.id === admin.id) {
             data.splice(i, 1)
             return true
           }
@@ -150,10 +153,10 @@ class ManageAccount extends React.Component {
                 const obj = this.state.data.find(o => o.id === key)
                 Swal({
                   title: 'Are you sure?',
-                  text: 'You will not be able to recover this entry!',
+                  text: 'This user will no longer be an admin!',
                   type: 'warning',
                   showCancelButton: true,
-                  confirmButtonText: 'Yes, delete Entry!',
+                  confirmButtonText: 'Yes, Remove Admin!',
                   confirmButtonColor: '#d33',
                   cancelButtonText: 'Cancel',
                 }).then(result => {
@@ -307,14 +310,14 @@ class ManageAccount extends React.Component {
         password: modal.password ? modal.password : '',
       }
 
-      console.log(adminObj)
-
       const _this = this
       this.submitPromise(adminObj).then(function(res) {
         if (res.success) {
           _this.getAllAdmins()
           _this.toggleModal()
-          Swal('Yaah', 'Admin created', 'success')
+
+          const successMsg = modal.isEdit ? 'Admin modified' : 'Admin created'
+          Swal('Yaah', successMsg, 'success')
         } else {
           Swal('Operation failed!!!', res.error, 'error')
         }
