@@ -64,6 +64,6 @@ app.get('*', function(req, res) {
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
 
 userController.createAdmin()
-schedule.scheduleJob({hour: 7}, () => {
+schedule.scheduleJob('0 7 * * *', () => {
   emailService.sendDailyEmail()
 })

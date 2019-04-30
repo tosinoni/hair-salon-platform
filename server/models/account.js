@@ -10,6 +10,7 @@ const Account = new Schema(
     presentImmigrationStatus: String,
     monthsOwing: Number,
     amountOwing: Number,
+    isPaymentMade: Boolean,
   },
   { timestamps: { createdAt: 'created_at' } },
 )
