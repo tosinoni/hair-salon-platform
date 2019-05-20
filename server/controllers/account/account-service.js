@@ -51,8 +51,43 @@ async function isNewEntryValid(entry) {
   return entryWithUserId ? 'Entry for user already exists' : ''
 }
 
+async function togglePaymentStatusForUser(entryId) {
+  const entryModel = await Account.findById(entryId)
+
+  if (entryModel && entryModel.monthsOwing > 0) {
+    const monthlyPayment = entryModel.amountOwing / entryModel.monthsOwing
+
+    if (entryModel.isPaymentMade) {
+      entryModel.monthsOwing += 1
+      entryModel.amountOwing += monthlyPayment
+    } else {
+      entryModel.monthsOwing -= 1
+      entryModel.amountOwing -= monthlyPayment
+    }
+
+    entryModel.isPaymentMade = !entryModel.isPaymentMade
+  }
+
+
+  return entryModel
+}
+
+async function getUsersDetailsForDebtors(debtors) {
+  const userDetails = []
+
+  for (const debtor of debtors) {
+    const user = await User.findById(debtor.userId).lean()
+    user.amountOwing = debtor.monthsOwing > 0 ? debtor.amountOwing / debtor.monthsOwing : 0
+    userDetails.push(user)
+  }
+
+  return userDetails
+}
+
 module.exports = {
   isEntryValid,
   convertAccountEntryBodyToAccountModel,
   isNewEntryValid,
+  togglePaymentStatusForUser,
+  getUsersDetailsForDebtors
 }

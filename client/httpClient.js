@@ -139,9 +139,30 @@ httpClient.getAllAccountEntries = function() {
     })
 }
 
+httpClient.getAllDebtors = function() {
+  return httpClient({ method: 'get', url: '/account/debtors' })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err
+    })
+}
+
 httpClient.updateAccountEntry = function(entryObj) {
   return this({ method: 'put', url: '/account/' + entryObj._id, data: entryObj })
     .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+httpClient.togglePaymentStatus = function(entryId) {
+  return this({ method: 'post', url: `/account/${entryId}/togglePaymentStatus` })
+    .then(res => {
+      console.log(res.data)
       return res.data
     })
     .catch(err => {

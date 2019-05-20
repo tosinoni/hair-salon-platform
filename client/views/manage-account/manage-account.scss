@@ -39,6 +39,21 @@
       font-size: 0.875rem;
       line-height: 1.35em;
     }
+    .btn-secondary {
+      background-size: 210% 210%;
+      background-position: 100% 0;
+      transition: all 0.15s ease;
+      box-shadow: none;
+      color: #fff;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      margin: 4px 1px;
+      border-radius: 0.4285rem;
+      padding: 11px 40px;
+      font-size: 0.875rem;
+      line-height: 1.35em;
+    }
   }
 
   .card-body {

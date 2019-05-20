@@ -8,6 +8,7 @@ const userRoutes = require('./routes/users.js')
 const accountRoutes = require('./routes/account.js')
 const adminRoutes = require('./routes/admin.js')
 const userController = require('./controllers/users.js')
+const accountController = require('./controllers/account/account.js')
 const path = require('path')
 const serveStatic = require('serve-static')
 const emailService = require('./email-service/email-service.js')
@@ -60,10 +61,15 @@ app.use(serveStatic('./dist', { index: ['default.html', 'default.htm'] }))
 app.get('*', function(req, res) {
   res.sendFile(appDir)
 })
+
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`))
 
 userController.createAdmin()
+var j = schedule.scheduleJob('0 0 1 * *', function(){
+  console.log('Resetting paymengt status this month');
+  accountController.resetPaymentStatus()
+});
 schedule.scheduleJob('0 7 * * *', () => {
   emailService.sendDailyEmail()
 })

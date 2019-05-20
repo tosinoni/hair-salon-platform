@@ -28,6 +28,16 @@ exports.getAllEntries = function(req, res) {
   })
 }
 
+exports.getAllDebtors = async function(req, res) {
+  Account.find({isPaymentMade: false}, async(err, data) => {
+    if (err) return res.status(204).send({ success: false, error: 'could not get all debtors' })
+
+    let users = await AccountService.getUsersDetailsForDebtors(data)
+
+    return res.status(200).send({ success: true, data: users })
+  })
+}
+
 exports.updateEntry = async function(req, res) {
   const { id } = req.params
 
@@ -53,5 +63,22 @@ exports.deleteEntryById = function(req, res) {
   Account.deleteOne({ _id: id }, err => {
     if (err) return res.status(204).send({ success: false, error: 'Could not delete entry' })
     return res.status(200).send({ success: true })
+  })
+}
+
+exports.togglePaymentStatus = async function(req, res) {
+  const { id } = req.params
+
+  let accountEntry = await AccountService.togglePaymentStatusForUser(id)
+
+  Account.updateOne({ _id: id }, accountEntry, (err, account) => {
+    if (err) return res.status(400).send({ success: false, error: 'Could not update entry' })
+    return res.status(200).send({ success: true, data: accountEntry })
+  })
+}
+
+exports.resetPaymentStatus = async function(req, res) {
+  Account.updateMany({ }, {isPaymentMade: false}, (err) => {
+    if (err) console.log('could not reset all payment status for this month')
   })
 }

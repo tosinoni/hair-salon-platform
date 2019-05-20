@@ -5,6 +5,8 @@ import FontAwesome from 'react-fontawesome'
 import './manage-account.scss'
 import httpClient from '../../httpClient'
 
+import MonthlyReport from '../../components/monthlyReport/monthlyReport'
+
 import AsyncSelect from 'react-select/lib/Async'
 import { isArrayEmpty, isStringValid } from '../../util'
 import Swal from 'sweetalert2'
@@ -51,6 +53,7 @@ class ManageAccount extends React.Component {
 
     this.state = {
       data: [],
+      isMonthlyReportModalOpened: false,
       modal: getInitialState(false),
     }
 
@@ -61,6 +64,8 @@ class ManageAccount extends React.Component {
     this.setEntryFieldState = this.setEntryFieldState.bind(this)
     this.editEntryClicked = this.editEntryClicked.bind(this)
     this.deleteEntry = this.deleteEntry.bind(this)
+    this.togglePaymentStatus = this.togglePaymentStatus.bind(this)
+    this.toggleGetMonthlyReport = this.toggleGetMonthlyReport.bind(this)
 
     this.getAllEntries()
   }
@@ -119,6 +124,17 @@ class ManageAccount extends React.Component {
     })
   }
 
+  togglePaymentStatus(entry) {
+    httpClient.togglePaymentStatus(entry.entryId).then(res => {
+      if (res.success) {
+        this.getAllEntries()
+        Swal('Done!!!', 'Payment status updated successfully', 'success')
+      } else {
+        Swal('Oops', res.error, 'error')
+      }
+    })
+  }
+
   getEntriesDataForTable(entries) {
     return entries.map((entry, key) => {
       return {
@@ -129,6 +145,7 @@ class ManageAccount extends React.Component {
         amountOwing: entry.amountOwing,
         presentImmigrationStatus: entry.presentImmigrationStatus,
         monthsOwing: entry.monthsOwing,
+        isPaymentMade: entry.isPaymentMade ? 'PAID' : 'NOT PAID',
         actions: (
           // we've added some custom button actions
           <div className="actions-center">
@@ -170,6 +187,19 @@ class ManageAccount extends React.Component {
             >
               <FontAwesome name="times" />
             </Button>{' '}
+            <Button
+              onClick={() => {
+                const obj = this.state.data.find(o => o.id === key)
+                this.togglePaymentStatus(obj)
+              }}
+              color={entry.isPaymentMade ? 'warning' : 'success'}
+              size="sm"
+              round
+              title={entry.isPaymentMade ? 'Payment not made' : 'Payment made'}
+              icon
+            >
+              <FontAwesome name={entry.isPaymentMade ? 'thumbs-down' : 'thumbs-up'} />
+            </Button>{' '}
           </div>
         ),
       }
@@ -182,6 +212,11 @@ class ManageAccount extends React.Component {
     const toggle = !modal.toggle
 
     this.setState(getInitialState(toggle))
+  }
+
+  toggleGetMonthlyReport() {
+    const isMonthlyReportModalOpened = !this.state.isMonthlyReportModalOpened
+    this.setState({isMonthlyReportModalOpened})
   }
 
   setUser(user) {
@@ -291,6 +326,10 @@ class ManageAccount extends React.Component {
             <Card className="manage-account">
               <CardHeader>
                 <CardTitle tag="h4">Manage Account</CardTitle>
+                <div>
+                <Button color="secondary" type="submit" onClick={this.toggleGetMonthlyReport}>
+                  Get Monthly Report
+                </Button>
                 <Button color="primary" type="submit" onClick={this.toggleModal}>
                   Add New Entry
                 </Button>
@@ -350,6 +389,13 @@ class ManageAccount extends React.Component {
                     </Button>
                   </ModalFooter>
                 </Modal>
+                <Modal isOpen={this.state.isMonthlyReportModalOpened} toggle={this.toggleGetMonthlyReport}>
+                  <ModalHeader toggle={this.toggleGetMonthlyReport}>List Of Debtors</ModalHeader>
+                  <ModalBody> 
+                    <MonthlyReport />
+                  </ModalBody>
+                </Modal>
+                </div>
               </CardHeader>
               <CardBody>
                 <ReactTable
@@ -377,6 +423,11 @@ class ManageAccount extends React.Component {
                     {
                       Header: 'Amount',
                       accessor: 'amountOwing',
+                      className: 'actions-center',
+                    },
+                    {
+                      Header: 'Monthly Payment Status',
+                      accessor: 'isPaymentMade',
                       className: 'actions-center',
                     },
                     {
