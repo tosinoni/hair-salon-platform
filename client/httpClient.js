@@ -68,6 +68,46 @@ httpClient.register = function(userInfo) {
     })
 }
 
+httpClient.getAllAccountEntries = function() {
+  return httpClient({ method: 'get', url: '/account' })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err
+    })
+}
+
+httpClient.addAccountEntry = function(entryObj) {
+  return this({ method: 'post', url: '/account', data: entryObj })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+httpClient.updateAccountEntry = function(entryObj) {
+  return this({ method: 'put', url: '/account/' + entryObj._id, data: entryObj })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
+httpClient.deleteAccountEntry = function(entryId) {
+  return this({ method: 'delete', url: '/account/' + entryId })
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      return err.data
+    })
+}
+
 httpClient.searchForUsers = function(query, page = 1) {
   return this({ method: 'get', url: '/users/search?name=' + query })
     .then(res => {

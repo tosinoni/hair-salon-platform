@@ -144,8 +144,8 @@ class Header extends React.Component {
                   <InputGroup className="no-border">
                     <AsyncTypeahead
                       {...this.state}
-                      labelKey="fullname"
-                      filterBy={['lastname', 'givenNames', 'fullname']}
+                      labelKey="name"
+                      filterBy={['name']}
                       minLength={2}
                       onSearch={this.handleSearch}
                       placeholder="Search for user..."

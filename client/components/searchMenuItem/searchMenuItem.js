@@ -29,7 +29,7 @@ const SearchMenuItem = props => {
           width: '24px',
         }}
       />
-      <span>{user.lastname + ' ' + user.givenNames}</span>
+      <span>{user.name}</span>
     </div>
   )
 }

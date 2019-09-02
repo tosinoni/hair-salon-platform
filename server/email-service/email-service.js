@@ -68,8 +68,7 @@ async function sendDailyEmail() {
   if (users && users.length > 0) {
     users = users.map(function(user) {
       return {
-        'Last name': user.lastname,
-        'Given names': user.givenNames,
+        'Name': user.name,
         'Purpose Of Follow-up': user.purposeOfFollowup,
         email: user.email,
       }

@@ -17,9 +17,7 @@ exports.searchForUsers = function(req, res) {
   User.find(
     {
       $or: [
-        { lastname: { $regex: regex } },
-        { givenNames: { $regex: regex } },
-        { fullname: { $regex: regex } },
+        { name: { $regex: regex } }
       ],
     },
     (err, data) => {
@@ -171,8 +169,7 @@ exports.changePassword = async function(req, res) {
 
 exports.createAdmin = function() {
   var user = {
-    givenNames: 'Admin',
-    lastname: 'Admin',
+    name: 'Admin',
     username: 'admin',
     password: 'Admin123',
     isAdmin: true,

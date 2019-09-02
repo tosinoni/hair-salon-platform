@@ -5,6 +5,7 @@ const logger = require('morgan')
 const dotenv = require('dotenv')
 const helmet = require('helmet')
 const userRoutes = require('./routes/users.js')
+const accountRoutes = require('./routes/account.js')
 const userController = require('./controllers/users.js')
 const path = require('path')
 const serveStatic = require('serve-static')
@@ -50,6 +51,8 @@ app.get('/api', (req, res) => {
 })
 
 app.use('/api/users', userRoutes)
+app.use('/api/account', accountRoutes)
+
 const appDir = path.join(`${__dirname}/../dist/index.html`)
 app.use(serveStatic('./dist', { index: ['default.html', 'default.htm'] }))
 
