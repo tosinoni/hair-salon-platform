@@ -7,7 +7,7 @@ import Sidebar from '../../components/sidebar/sidebar'
 import Header from '../../components/header/header'
 
 import routes from '../../routes'
-import logoImage from '../../assets/logoSmall.png'
+import logoImage from '../../assets/logo.png'
 import './admin.scss'
 
 var perfectScrollbar
@@ -93,7 +93,7 @@ class Admin extends React.Component {
           bgColor={this.state.backgroundColor}
           logo={{
             outterLink: '' + this.props.location.pathname,
-            text: 'Olalere Law Office',
+            text: 'Olalere Hair Salon',
             imgSrc: logoImage,
           }}
           toggleSidebar={this.toggleSidebar}

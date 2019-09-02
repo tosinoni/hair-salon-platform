@@ -2,48 +2,30 @@ const User = require('../models/user')
 
 function isUserBodyNotValid(userBody) {
   const {
-    lastname,
-    givenNames,
-    email,
+    name,
     phoneNumber,
-    issueDate,
-    expiryDate,
-    maritalStatus,
-    presentImmigrationStatus,
     followupDate,
+    lastServiceDate
   } = userBody
 
-  if (!lastname) {
+  if (!name) {
     return 'Please provide a valid last name'
-  } else if (!givenNames) {
-    return 'Please provide the given names'
-  } else if (!email) {
-    return 'Please provide an email'
   } else if (!phoneNumber) {
     return 'Please provide a phone number'
-  } else if (!presentImmigrationStatus) {
-    return 'Please provide the current immigration status'
-  } else if (!maritalStatus) {
-    return 'Please provide the marital status'
-  } else if (issueDate && expiryDate && issueDate > expiryDate) {
-    return 'Issue date cannot be greater than expiry date'
-  } else if (followupDate && followupDate < Date.now()) {
+  }  else if (followupDate && followupDate < Date.now()) {
     return 'Follow-up date cannot be less than today'
+  } else if (lastServiceDate && lastServiceDate > Date.now()) {
+    return 'last service date cannot be greater than today'
   }
 }
 
 async function isUserValidForRegistration(userBody) {
-  const { email, phoneNumber } = userBody
+  const { phoneNumber } = userBody
 
   const isUserBodyNotValidMsg = isUserBodyNotValid(userBody)
 
   if (isUserBodyNotValidMsg) {
     return isUserBodyNotValidMsg
-  }
-
-  var userWithEmail = await findUserByEmail(email)
-  if (userWithEmail) {
-    return 'user with email exists already'
   }
 
   var userWithPhoneNumber = await findUserByPhoneNumber(phoneNumber)
@@ -53,7 +35,7 @@ async function isUserValidForRegistration(userBody) {
 }
 
 async function isUserNotValidForUpdate(userBody) {
-  const { _id, email, phoneNumber } = userBody
+  const { _id, phoneNumber } = userBody
 
   if (!_id) {
     return 'user is not registered'
@@ -62,12 +44,6 @@ async function isUserNotValidForUpdate(userBody) {
   const isUserBodyNotValidMsg = isUserBodyNotValid(userBody)
   if (isUserBodyNotValidMsg) {
     return isUserBodyNotValidMsg
-  }
-
-  var userWithEmail = await findUserByEmail(email)
-
-  if (userWithEmail && userWithEmail._id != _id) {
-    return 'user with email exists already'
   }
 
   var userWithPhoneNumber = await findUserByPhoneNumber(phoneNumber)
@@ -103,17 +79,12 @@ async function isAdminPasswordInfoInValid(passwordInfo) {
 function convertUserBodyToUserModel(userBody) {
   var userModel = {}
 
-  userModel.lastname = userBody.lastname.trim()
-  userModel.givenNames = userBody.givenNames.trim()
-  userModel.fullname = userBody.lastname.trim() + ' ' + userBody.givenNames.trim()
+  console.log(userBody)
+  userModel.name = userBody.name.trim()
   userModel.phoneNumber = userBody.phoneNumber.trim()
   userModel.alternateTelephoneNumber = userBody.alternateTelephoneNumber.trim()
-  userModel.email = userBody.email.trim()
-  userModel.consultationOnly = userBody.consultationOnly
-  userModel.maritalStatus = userBody.maritalStatus
-  userModel.issueDate = userBody.issueDate
-  userModel.expiryDate = userBody.expiryDate
-  userModel.presentImmigrationStatus = userBody.presentImmigrationStatus
+  userModel.lastServiceDate = userBody.lastServiceDate
+  userModel.serviceType = userBody.serviceTypeSelected
   userModel.followupDate = userBody.followupDate ? userBody.followupDate : ''
   userModel.purposeOfFollowup = userBody.purposeOfFollowup ? userBody.purposeOfFollowup : ''
   userModel.notes = userBody.notes ? userBody.notes.trim() : ''

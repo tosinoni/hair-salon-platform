@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 import httpClient from '../../httpClient'
 
 import { isArrayEmpty } from '../../util'
+import moment from 'moment'
 
 import './users.scss'
 class Users extends React.Component {
@@ -65,9 +66,9 @@ class Users extends React.Component {
       return {
         id: key,
         userId: user._id,
-        lastname: user.lastname,
-        givenNames: user.givenNames,
-        presentImmigrationStatus: user.presentImmigrationStatus,
+        name: user.name,
+        serviceType: user.serviceType,
+        lastServiceDate: moment(user.lastServiceDate).format('MMMM Do YYYY'),
         phoneNumber: user.phoneNumber,
         actions: (
           // we've added some custom button actions
@@ -136,23 +137,23 @@ class Users extends React.Component {
                     (row[filter.id].toUpperCase().includes(filter.value.toUpperCase()))}
                   columns={[
                     {
-                      Header: 'Last Name',
-                      accessor: 'lastname',
-                      className: "actions-center"
-                    },
-                    {
-                      Header: 'Given Names',
-                      accessor: 'givenNames',
-                      className: "actions-center"
-                    },
-                    {
-                      Header: 'Immigration Status',
-                      accessor: 'presentImmigrationStatus',
+                      Header: 'Name',
+                      accessor: 'name',
                       className: "actions-center"
                     },
                     {
                       Header: 'Phone Number',
                       accessor: 'phoneNumber',
+                      className: "actions-center"
+                    },
+                    {
+                      Header: 'Service Type',
+                      accessor: 'serviceType',
+                      className: "actions-center"
+                    },
+                    {
+                      Header: 'Last Service Date',
+                      accessor: 'lastServiceDate',
                       className: "actions-center"
                     },
                     {

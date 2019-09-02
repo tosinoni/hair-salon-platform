@@ -19,7 +19,7 @@ import {
 import Button from '../../components/customButton/customButton'
 import FontAwesome from 'react-fontawesome'
 import httpClient from '../../httpClient'
-import logoImage from '../../assets/logoSmall.png'
+import logoImage from '../../assets/logo.png'
 import Swal from 'sweetalert2'
 import { isStringValid } from '../../util'
 

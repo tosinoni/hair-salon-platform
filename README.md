@@ -1,4 +1,4 @@
-# immigration-platform
+# hair-salon-platform
 
 The platform uses [ReactJS](http://reactjs.org) for client side and [Express](http://expressjs.com) for server side.
 

@@ -10,6 +10,7 @@ import {
   FormGroup,
   Input,
   Label,
+  CustomInput,
   Row,
   Col,
 } from 'reactstrap'
@@ -17,13 +18,11 @@ import {
 import SweetAlert from 'sweetalert2-react'
 
 import {
-  consultationOptions,
-  maritalStatusOptions,
-  immigrationStatuses,
+  serviceTypes,
   followUpReasons,
 } from '../../constants/constants'
 
-import { isNameValid, isEmailValid, isPhoneNumberValid, isStringValid, isBoolean } from '../../util'
+import { isNameValid, isPhoneNumberValid, isStringValid } from '../../util'
 
 import Datetime from 'react-datetime'
 
@@ -38,34 +37,19 @@ import './register.scss'
 function getInitialState() {
   return {
     register: {
-      lastname: '',
-      lastNameState: '',
-      givenNames: '',
-      givenNamesState: '',
-      email: '',
-      emailState: '',
+      name: '',
+      nameState: '',
       phoneNumber: '',
       phoneNumberState: '',
       alternateTelephoneNumber: '',
       alternateTelephoneNumberState: '',
-      consultationOnly: '',
-      consultationOnlySelection: null,
-      consultationOnlyState: '',
-      maritalStatus: '',
-      maritalStatusSelection: null,
-      maritalStatusState: '',
-      presentImmigrationStatus: '',
-      presentImmigrationStatusSelection: null,
-      presentImmigrationStatusState: '',
-      issueDate: '',
-      issueDateSelection: '',
-      issueDateState: '',
-      expiryDate: '',
-      expiryDateSelection: '',
-      expiryDateState: '',
       purposeOfFollowup: '',
+      serviceType: {},
       purposeOfFollowupSelection: null,
       purposeOfFollowupState: '',
+      lastServiceDate: '',
+      lastServiceDateSelection: '',
+      lastServiceDateState: '',
       followupDate: '',
       followupDateSelection: '',
       followupDateState: '',
@@ -84,6 +68,7 @@ class Register extends React.Component {
     this.setRegisterFieldState = this.setRegisterFieldState.bind(this)
     this.resetFieldState = this.resetFieldState.bind(this)
     this.resetAllFieldStates = this.resetAllFieldStates.bind(this)
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this)
   }
 
   setRegisterFieldState(input, fieldName, stateName, validateFn) {
@@ -105,16 +90,8 @@ class Register extends React.Component {
     this.setState(getInitialState())
   }
 
-  setLastName(evt) {
-    this.setRegisterFieldState(evt.target.value, 'lastname', 'lastNameState', isNameValid)
-  }
-
-  setEmail(evt) {
-    this.setRegisterFieldState(evt.target.value, 'email', 'emailState', isEmailValid)
-  }
-
-  setGivenNames(evt) {
-    this.setRegisterFieldState(evt.target.value, 'givenNames', 'givenNamesState', isNameValid)
+  setName(evt) {
+    this.setRegisterFieldState(evt.target.value, 'name', 'nameState', isNameValid)
   }
 
   setPhoneNumber(evt) {
@@ -124,6 +101,34 @@ class Register extends React.Component {
       'phoneNumberState',
       isPhoneNumberValid,
     )
+  }
+
+  handleCheckboxChange(e) {
+    const item = e.target.id;
+    const isChecked = e.target.checked;
+    const serviceType = this.state.register.serviceType
+    serviceType[item] = isChecked
+
+    this.setState({serviceType});
+  }
+
+  setLastServiceDate(moment) {
+    const register = this.state.register
+    const date = moment && moment.toDate ? moment.toDate() : ''
+    const currentDate = new Date()
+    currentDate.setHours(0,0,0,0);
+
+    register.lastServiceDate = date
+    register.lastServiceDateSelection = moment
+
+    if (date) {
+      register.lastServiceDateState =
+        isStringValid(date) && date <= currentDate ? 'has-success' : 'has-danger'
+    } else {
+      register.lastServiceDateState = ''
+    }
+
+    this.setState({ register })
   }
 
   setAlternatePhoneNumber(evt) {
@@ -145,80 +150,6 @@ class Register extends React.Component {
     }
   }
 
-  setConsultationOption(consultationOption) {
-    const register = this.state.register
-
-    register.consultationOnlySelection = consultationOption
-    register.consultationOnly = consultationOption.value
-    register.consultationOnlyState = isBoolean(consultationOption.value)
-      ? 'has-success'
-      : 'has-danger'
-
-    this.setState({ register })
-  }
-
-  setMaritalStatusOption(maritalStatusOption) {
-    const register = this.state.register
-
-    register.maritalStatusSelection = maritalStatusOption
-    register.maritalStatus = maritalStatusOption.value
-    register.maritalStatusState = isStringValid(maritalStatusOption.value)
-      ? 'has-success'
-      : 'has-danger'
-
-    this.setState({ register })
-  }
-
-  setPresentImmigrationStatus(immigrationStatus) {
-    const register = this.state.register
-
-    register.presentImmigrationStatusSelection = immigrationStatus
-    register.presentImmigrationStatus = immigrationStatus.value
-    register.presentImmigrationStatusState = isStringValid(immigrationStatus.value)
-      ? 'has-success'
-      : 'has-danger'
-
-    this.setState({ register })
-  }
-
-  setIssueDate(moment) {
-    const register = this.state.register
-    const date = moment && moment.toDate ? moment.toDate() : ''
-
-    register.issueDateSelection = moment
-    register.issueDate = date
-
-    if (date) {
-      register.issueDateState =
-        isStringValid(date) && (date >= register.expiryDate || !register.expiryDate)
-          ? 'has-success'
-          : 'has-danger'
-    } else {
-      register.issueDateState = ''
-    }
-
-    this.setState({ register })
-  }
-
-  setExpiryDate(moment) {
-    const register = this.state.register
-    const date = moment && moment.toDate ? moment.toDate() : ''
-
-    register.expiryDateSelection = moment
-    register.expiryDate = date
-
-    if (date) {
-      register.expiryDateState =
-        isStringValid(date) && (date >= register.issueDate || !register.issueDate)
-          ? 'has-success'
-          : 'has-danger'
-    } else {
-      register.expiryDateState = ''
-    }
-
-    this.setState({ register })
-  }
-
   setPurposeOfFollowup(purpose) {
     const register = this.state.register
 
@@ -236,7 +167,7 @@ class Register extends React.Component {
     const register = this.state.register
     const date = moment && moment.toDate ? moment.toDate() : ''
     const currentDate = new Date()
-    currentDate.setHours(0,0,0,0);
+    currentDate.setHours(0, 0, 0, 0);
 
     register.followupDate = date
     register.followupDateSelection = moment
@@ -263,18 +194,8 @@ class Register extends React.Component {
     let register = this.state.register
     let formValid = true
 
-    if (register.lastNameState !== 'has-success') {
-      register.lastNameState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.givenNamesState !== 'has-success') {
-      register.givenNamesState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.emailState !== 'has-success') {
-      register.emailState = 'has-danger'
+    if (register.nameState !== 'has-success') {
+      register.nameState = 'has-danger'
       formValid = false
     }
 
@@ -288,33 +209,13 @@ class Register extends React.Component {
       formValid = false
     }
 
-    if (register.consultationOnlyState !== 'has-success') {
-      register.consultationOnlyState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.maritalStatusState !== 'has-success') {
-      register.maritalStatusState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.presentImmigrationStatusState !== 'has-success') {
-      register.presentImmigrationStatusState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.issueDateState !== 'has-success' && register.issueDate) {
-      register.issueDateState = 'has-danger'
-      formValid = false
-    }
-
-    if (register.expiryDateState !== 'has-success' && register.expiryDate) {
-      register.expiryDateState = 'has-danger'
-      formValid = false
-    }
-
     if (register.purposeOfFollowupState !== 'has-success' && register.purposeOfFollowup) {
       register.purposeOfFollowupState = 'has-danger'
+      formValid = false
+    }
+
+    if (register.lastServiceDateState !== 'has-success' && register.lastServiceDate) {
+      register.lastServiceDateState = 'has-danger'
       formValid = false
     }
 
@@ -331,7 +232,13 @@ class Register extends React.Component {
     evt.preventDefault()
 
     if (this.isRegisterFormValid()) {
-      console.log(this.state.register)
+      const serviceType = this.state.register.serviceType
+
+      const serviceTypeSelected = Object.keys(serviceType).filter((type)=> {
+        return serviceType[type]
+      });
+
+      this.state.register.serviceTypeSelected = serviceTypeSelected.toString()
       httpClient.register(this.state.register).then(res => {
         if (res.success) {
           Swal('Yaah', 'User registered successfully', 'success')
@@ -347,19 +254,12 @@ class Register extends React.Component {
 
   render() {
     const {
-      lastname,
-      givenNames,
-      email,
+      name,
       phoneNumber,
       alternateTelephoneNumber,
-      maritalStatusSelection,
-      consultationOnlySelection,
-      presentImmigrationStatusSelection,
-      issueDate,
-      expiryDate,
       purposeOfFollowupSelection,
       followupDate,
-      showAlert,
+      lastServiceDate,
       notes,
     } = this.state.register
 
@@ -373,27 +273,15 @@ class Register extends React.Component {
               </CardHeader>
               <CardBody>
                 <Row>
-                  <Col className="pr-md-1" md="4">
-                    <FormGroup className={'has-label ' + this.state.register.lastNameState}>
-                      <label>Last Name: * </label>
-                      <Input type="text" value={lastname} onChange={e => this.setLastName(e)} />
-                    </FormGroup>
-                  </Col>
-                  <Col className="pl-md-1" md="8">
-                    <FormGroup className={'has-label ' + this.state.register.givenNamesState}>
-                      <label>Given Name(s): * </label>
-                      <Input type="text" value={givenNames} onChange={e => this.setGivenNames(e)} />
+                  <Col className="pr-md-1" md="8">
+                    <FormGroup className={'has-label ' + this.state.register.nameState}>
+                      <label>Name: * </label>
+                      <Input type="text" value={name} onChange={e => this.setName(e)} />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col className="pr-md-1" md="4">
-                    <FormGroup className={'has-label ' + this.state.register.emailState}>
-                      <label>Email: * </label>
-                      <Input type="email" value={email} onChange={e => this.setEmail(e)} />
-                    </FormGroup>
-                  </Col>
-                  <Col className="px-md-1" md="4">
+                  <Col className="pr-md-1" md="6">
                     <FormGroup className={'has-label ' + this.state.register.phoneNumberState}>
                       <label>Tel: *</label>
                       <Input
@@ -403,7 +291,7 @@ class Register extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col className="pl-md-1" md="4">
+                  <Col className="pl-md-1" md="6">
                     <FormGroup
                       className={'has-label ' + this.state.register.alternateTelephoneNumberState}
                     >
@@ -419,76 +307,32 @@ class Register extends React.Component {
                 <Row>
                   <Col xs={12} md={6}>
                     <FormGroup>
-                      <label>Consultation Option: * </label>
-                      <Select
-                        className={
-                          'react-select primary ' + this.state.register.consultationOnlyState
+                    <Label for="exampleCheckbox">Service Type: </Label>
+                    <div>
+                        {
+                          serviceTypes.map(item => (
+                            <CustomInput 
+                              key={item.key}
+                              type="checkbox"
+                              checked={this.state.register.serviceType[item.key]}
+                              onChange={this.handleCheckboxChange}
+                              id={item.key}
+                              label={item.name} />
+                          ))
                         }
-                        classNamePrefix="react-select"
-                        name="consultationOption"
-                        value={consultationOnlySelection}
-                        options={consultationOptions}
-                        onChange={value => this.setConsultationOption(value)}
-                        isSearchable
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs={12} md={6}>
-                    <FormGroup>
-                      <label>Marital Status: * </label>
-                      <Select
-                        className={
-                          'react-select primary ' + this.state.register.maritalStatusState
-                        }
-                        classNamePrefix="react-select"
-                        name="maritalStatus"
-                        value={maritalStatusSelection}
-                        options={maritalStatusOptions}
-                        onChange={value => this.setMaritalStatusOption(value)}
-                        isSearchable
-                      />
+                      </div>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
                   <Col xs={12} md={6}>
-                    <FormGroup>
-                      <label>Present Immigration Status: * </label>
-                      <Select
-                        className={
-                          'react-select primary ' +
-                          this.state.register.presentImmigrationStatusState
-                        }
-                        classNamePrefix="react-select"
-                        name="immigrationStatus"
-                        value={presentImmigrationStatusSelection}
-                        options={immigrationStatuses}
-                        onChange={value => this.setPresentImmigrationStatus(value)}
-                        isSearchable
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={12} md={6}>
-                    <FormGroup className={this.state.register.issueDateState}>
-                      <label>Issue Date:</label>
+                    <FormGroup className={this.state.register.lastServiceDateState}>
+                      <label>Last Service Date:</label>
                       <Datetime
                         timeFormat={false}
                         closeOnSelect={true}
-                        value={issueDate}
-                        onChange={date => this.setIssueDate(date)}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs={12} md={6}>
-                    <FormGroup className={this.state.register.expiryDateState}>
-                      <label>Expiry Date:</label>
-                      <Datetime
-                        timeFormat={false}
-                        closeOnSelect={true}
-                        value={expiryDate}
-                        onChange={date => this.setExpiryDate(date)}
+                        value={lastServiceDate}
+                        onChange={date => this.setLastServiceDate(date)}
                       />
                     </FormGroup>
                   </Col>

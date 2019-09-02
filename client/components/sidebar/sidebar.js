@@ -5,7 +5,7 @@ import FontAwesome from 'react-fontawesome'
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
 
-import logoImage from '../../assets/logoSmall.png'
+import logoImage from '../../assets/logo.png'
 import './sidebar.scss'
 
 var perfectScrollbar

@@ -39,6 +39,7 @@ exports.getTotalUsersToFollowupPerMonthInCurrentyear = function(req, res) {
       {
         $match: {
           followupDate: { $gte: previousYearDate, $lt: nextYearDate },
+          isAdmin: false
         },
       },
       {

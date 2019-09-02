@@ -12,6 +12,8 @@ import {
   Input,
   Row,
   Col,
+  CustomInput,
+  Label
 } from 'reactstrap'
 
 import {
@@ -24,9 +26,7 @@ import {
 } from '../../util'
 
 import {
-  maritalStatusOptions,
-  consultationOptions,
-  immigrationStatuses,
+  serviceTypes,
   followUpReasons,
 } from '../../constants/constants'
 
@@ -44,7 +44,9 @@ class Admin extends React.Component {
     super(props)
 
     this.state = {
-      user: '',
+      user: {
+        serviceType: {}
+      },
     }
 
     this.goBackToDashBoard = this.goBackToDashBoard.bind(this)
@@ -52,6 +54,7 @@ class Admin extends React.Component {
     this.editUserSubmit = this.editUserSubmit.bind(this)
     this.resetFieldState = this.resetFieldState.bind(this)
     this.resetState = this.resetState.bind(this)
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this)
   }
 
   goBackToDashBoard() {
@@ -60,23 +63,22 @@ class Admin extends React.Component {
   }
 
   convetServerModelToClient(user) {
-    user.consultationOnlySelection = getSelectionFromOptions(
-      user.consultationOnly,
-      consultationOptions,
-    )
-    user.maritalStatusSelection = getSelectionFromOptions(user.maritalStatus, maritalStatusOptions)
-    user.presentImmigrationStatusSelection = getSelectionFromOptions(
-      user.presentImmigrationStatus,
-      immigrationStatuses,
-    )
+    const serviceType = {}
+    for (const type of serviceTypes) {
+      serviceType[type.key] = user.serviceType.includes(type.key)
+    }
+
+    user.serviceType = serviceType
+
     user.purposeOfFollowupSelection = getSelectionFromOptions(
       user.purposeOfFollowup,
       followUpReasons,
     )
 
-    user.issueDate = user.issueDate ? new Date(user.issueDate) : ''
-    user.expiryDate = user.expiryDate ? new Date(user.expiryDate) : ''
+    user.lastServiceDate = user.lastServiceDate ? new Date(user.lastServiceDate) : ''
     user.followupDate = user.followupDate ? new Date(user.followupDate) : ''
+
+    console.log(user)
 
     return user
   }
@@ -128,20 +130,21 @@ class Admin extends React.Component {
     this.setState({ user })
   }
 
-  setLastName(evt) {
-    this.setUserFieldState(evt.target.value, 'lastname', 'lastNameState', isNameValid)
-  }
-
-  setGivenNames(evt) {
-    this.setUserFieldState(evt.target.value, 'givenNames', 'givenNamesState', isNameValid)
-  }
-
-  setEmail(evt) {
-    this.setUserFieldState(evt.target.value, 'email', 'emailState', isEmailValid)
+  setName(evt) {
+    this.setUserFieldState(evt.target.value, 'name', 'nameState', isNameValid)
   }
 
   setPhoneNumber(evt) {
     this.setUserFieldState(evt.target.value, 'phoneNumber', 'phoneNumberState', isPhoneNumberValid)
+  }
+
+  handleCheckboxChange(e) {
+    const item = e.target.id;
+    const isChecked = e.target.checked;
+    const serviceType = this.state.user.serviceType
+    serviceType[item] = isChecked
+
+    this.setState({serviceType});
   }
 
   setAlternatePhoneNumber(evt) {
@@ -163,73 +166,21 @@ class Admin extends React.Component {
     }
   }
 
-  setConsultationOption(consultationOption) {
-    const user = this.state.user
 
-    user.consultationOnlySelection = consultationOption
-    user.consultationOnly = consultationOption.value
-    user.consultationOnlyState = isBoolean(consultationOption.value) ? 'has-success' : 'has-danger'
-
-    this.setState({ user })
-  }
-
-  setMaritalStatusOption(maritalStatusOption) {
-    const user = this.state.user
-
-    user.maritalStatusSelection = maritalStatusOption
-    user.maritalStatus = maritalStatusOption.value
-    user.maritalStatusState = isStringValid(maritalStatusOption.value)
-      ? 'has-success'
-      : 'has-danger'
-
-    this.setState({ user })
-  }
-
-  setPresentImmigrationStatus(immigrationStatus) {
-    const user = this.state.user
-
-    user.presentImmigrationStatusSelection = immigrationStatus
-    user.presentImmigrationStatus = immigrationStatus.value
-    user.presentImmigrationStatusState = isStringValid(immigrationStatus.value)
-      ? 'has-success'
-      : 'has-danger'
-
-    this.setState({ user })
-  }
-
-  setIssueDate(moment) {
+  setLastServiceDate(moment) {
     const user = this.state.user
     const date = moment && moment.toDate ? moment.toDate() : ''
+    const currentDate = new Date()
+    currentDate.setHours(0,0,0,0);
 
-    user.issueDateSelection = moment
-    user.issueDate = date
-
-    if (date) {
-      user.issueDateState =
-        isStringValid(date) && (date >= user.expiryDate || !user.expiryDate)
-          ? 'has-success'
-          : 'has-danger'
-    } else {
-      user.issueDateState = ''
-    }
-
-    this.setState({ user })
-  }
-
-  setExpiryDate(moment) {
-    const user = this.state.user
-    const date = moment && moment.toDate ? moment.toDate() : ''
-
-    user.expiryDateSelection = moment
-    user.expiryDate = date
+    user.lastServiceDate = date
+    user.lastServiceDateSelection = moment
 
     if (date) {
-      user.expiryDateState =
-        isStringValid(date) && (date >= user.issueDate || !user.issueDate)
-          ? 'has-success'
-          : 'has-danger'
+      user.lastServiceDateState =
+        isStringValid(date) && date >= currentDate ? 'has-success' : 'has-danger'
     } else {
-      user.expiryDateState = ''
+      user.lastServiceDateState = ''
     }
 
     this.setState({ user })
@@ -279,16 +230,10 @@ class Admin extends React.Component {
     let user = this.state.user
 
     return (
-      user.lastNameState !== 'has-danger' &&
-      user.givenNamesState !== 'has-danger' &&
-      user.emailState !== 'has-danger' &&
+      user.nameState !== 'has-danger' &&
       user.phoneNumberState !== 'has-danger' &&
       user.alternateTelephoneNumberState !== 'has-danger' &&
-      user.consultationOnlyState !== 'has-danger' &&
-      user.maritalStatusState !== 'has-danger' &&
-      user.presentImmigrationStatusState !== 'has-danger' &&
-      user.issueDateState !== 'has-danger' &&
-      user.expiryDateState !== 'has-danger' &&
+      user.lastServiceDateState !== 'has-danger' &&
       user.purposeOfFollowupState !== 'has-danger' &&
       user.followupDateState !== 'has-danger'
     )
@@ -297,16 +242,10 @@ class Admin extends React.Component {
   resetState() {
     let user = this.state.user
 
-    user.lastNameState = ''
-    user.givenNamesState = ''
-    user.emailState = ''
+    user.nameState = ''
     user.phoneNumberState = ''
     user.alternateTelephoneNumberState = ''
-    user.consultationOnlyState = ''
-    user.maritalStatusState = ''
-    user.presentImmigrationStatusState = ''
-    user.issueDateState = ''
-    user.expiryDateState = ''
+    user.lastServiceDateState = ''
     user.purposeOfFollowupState = ''
     user.followupDateState = ''
 
@@ -317,6 +256,7 @@ class Admin extends React.Component {
     evt.preventDefault()
 
     if (this.isEditUserFormValid()) {
+      this.state.user.serviceTypeSelected = this.getServiceType()
       httpClient.updateUser(this.state.user).then(res => {
         if (res.success) {
           Swal('Yaah', 'User updated successfully', 'success')
@@ -330,13 +270,12 @@ class Admin extends React.Component {
     }
   }
 
-  getDisplayName() {
-    let user = this.state.user
+  getServiceType() {
+    const serviceType = this.state.user.serviceType
 
-    const givenNames = user && user.givenNames ? user.givenNames : ''
-    const lastname = user && user.lastname ? user.lastname : ''
-
-    return lastname + ' ' + givenNames
+      return Object.keys(serviceType).filter((type)=> {
+        return serviceType[type]
+      }).toString();
   }
 
   render() {
@@ -353,35 +292,19 @@ class Admin extends React.Component {
               <CardBody>
                 <Form>
                   <Row>
-                    <Col className="pr-md-1" md="4">
-                      <FormGroup className={'has-label ' + user.lastNameState}>
-                        <label>Last Name: *</label>
+                    <Col className="pr-md-1" md="8">
+                      <FormGroup className={'has-label ' + user.nameState}>
+                        <label>Name: *</label>
                         <Input
-                          value={user.lastname}
+                          value={user.name}
                           type="text"
-                          onChange={e => this.setLastName(e)}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" md="8">
-                      <FormGroup className={'has-label ' + user.givenNamesState}>
-                        <label>Given Names: *</label>
-                        <Input
-                          value={user.givenNames}
-                          type="text"
-                          onChange={e => this.setGivenNames(e)}
+                          onChange={e => this.setName(e)}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
-                    <Col className="pr-md-1" md="4">
-                      <FormGroup className={'has-label ' + user.emailState}>
-                        <label>Email: * </label>
-                        <Input type="email" value={user.email} onChange={e => this.setEmail(e)} />
-                      </FormGroup>
-                    </Col>
-                    <Col className="px-md-1" md="4">
+                    <Col className="pr-md-1" md="6">
                       <FormGroup className={'has-label ' + user.phoneNumberState}>
                         <label>Tel: *</label>
                         <Input
@@ -391,7 +314,7 @@ class Admin extends React.Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-md-1" md="4">
+                    <Col className="pl-md-1" md="6">
                       <FormGroup className={'has-label ' + user.alternateTelephoneNumberState}>
                         <label>Alternative Tel: </label>
                         <Input
@@ -403,84 +326,25 @@ class Admin extends React.Component {
                     </Col>
                   </Row>
                   <Row>
-                    <Col className="pr-md-1" xs={12} md={6}>
-                      <FormGroup>
-                        <label>Consultation Option: * </label>
-                        <Select
-                          className={'react-select primary ' + user.consultationOnlyState}
-                          classNamePrefix="react-select"
-                          name="consultationOption"
-                          value={user.consultationOnlySelection}
-                          options={consultationOptions}
-                          onChange={value => this.setConsultationOption(value)}
-                          isSearchable
-                          components={{
-                            IndicatorSeparator: () => null,
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" xs={12} md={6}>
-                      <FormGroup>
-                        <label>Marital Status: * </label>
-                        <Select
-                          className={'react-select primary ' + user.maritalStatusState}
-                          classNamePrefix="react-select"
-                          name="maritalStatus"
-                          value={user.maritalStatusSelection}
-                          options={maritalStatusOptions}
-                          onChange={value => this.setMaritalStatusOption(value)}
-                          isSearchable
-                          components={{
-                            IndicatorSeparator: () => null,
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1" xs={12} md={6}>
-                      <FormGroup>
-                        <label>Present Immigration Status: * </label>
-                        <Select
-                          className={'react-select primary ' + user.presentImmigrationStatusState}
-                          classNamePrefix="react-select"
-                          name="immigrationStatus"
-                          value={user.presentImmigrationStatusSelection}
-                          options={immigrationStatuses}
-                          onChange={value => this.setPresentImmigrationStatus(value)}
-                          isSearchable
-                          components={{
-                            IndicatorSeparator: () => null,
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1" md="6">
-                      <FormGroup className={user.issueDateState}>
-                        <label>Issue Date:</label>
-                        <Datetime
-                          timeFormat={false}
-                          closeOnSelect={true}
-                          value={user.issueDate}
-                          onChange={date => this.setIssueDate(date)}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" md="6">
-                      <FormGroup className={user.expiryDateState}>
-                        <label>Expiry Date:</label>
-                        <Datetime
-                          timeFormat={false}
-                          closeOnSelect={true}
-                          value={user.expiryDate}
-                          onChange={date => this.setExpiryDate(date)}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                  <Col xs={12} md={6}>
+                    <FormGroup>
+                    <Label for="exampleCheckbox">Service Type: </Label>
+                    <div>
+                        {
+                          serviceTypes.map(item => (
+                            <CustomInput 
+                              key={item.key}
+                              type="checkbox"
+                              checked={this.state.user.serviceType[item.key]}
+                              onChange={this.handleCheckboxChange}
+                              id={item.key}
+                              label={item.name} />
+                          ))
+                        }
+                      </div>
+                    </FormGroup>
+                  </Col>
+                </Row>
                   <Row>
                     <Col className="pr-md-1" md="6">
                       <FormGroup>
@@ -551,9 +415,9 @@ class Admin extends React.Component {
                   <div className="block block-four" />
                   <div className="avatar-container">
                     <img alt="..." className="avatar" src={profileImage} />
-                    <h5 className="title">{this.getDisplayName()}</h5>
+                    <h5 className="title">{user.name}</h5>
                   </div>
-                  <p className="description">{user.presentImmigrationStatus}</p>
+                  <p className="description">{this.getServiceType()}</p>
                 </div>
               </CardBody>
             </Card>

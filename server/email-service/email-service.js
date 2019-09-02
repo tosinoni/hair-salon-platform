@@ -18,9 +18,9 @@ function sendEMail(content) {
   const mailGenerator = new Mailgen({
     theme: 'salted',
     product: {
-      name: 'Olalere Law Office',
+      name: 'Olalere Hair Salon',
       link: process.env.HOST,
-      logo: 'https://res.cloudinary.com/dvxellcx5/image/upload/v1546629164/logoSmall.png',
+      logo: 'https://res.cloudinary.com/dvxellcx5/image/upload/v1546629164/logo.png',
     },
   })
 

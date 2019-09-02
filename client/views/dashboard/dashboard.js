@@ -101,8 +101,8 @@ class DashboardView extends React.Component {
       return {
         id: key,
         userId: user._id,
-        lastname: user.lastname,
-        givenNames: user.givenNames,
+        name: user.name,
+        phoneNumber: user.phoneNumber,
         purposeOfFollowup: user.purposeOfFollowup,
         followupDate: moment(user.followupDate).format('MMMM Do YYYY'),
         actions: (
@@ -169,13 +169,13 @@ class DashboardView extends React.Component {
                   }
                   columns={[
                     {
-                      Header: 'Last Name',
-                      accessor: 'lastname',
+                      Header: 'Name',
+                      accessor: 'name',
                       className: 'actions-center',
                     },
                     {
-                      Header: 'Given Names',
-                      accessor: 'givenNames',
+                      Header: 'Phone Number',
+                      accessor: 'phoneNumber',
                       className: 'actions-center',
                     },
                     {
